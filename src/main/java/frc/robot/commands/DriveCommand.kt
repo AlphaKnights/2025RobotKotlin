@@ -32,7 +32,6 @@ class DriveCommand(
                 rot() * Constants.DriveConstants.MAX_ANGULAR_SPEED
             ),
             fieldRelative = true,
-            rateLimit = true
         )
     }
     override fun end(interrupted: Boolean) {
@@ -41,7 +40,6 @@ class DriveCommand(
                 0.0, 0.0, 0.0
             ),
             fieldRelative = false,
-            rateLimit = false,
         )
     }
 }

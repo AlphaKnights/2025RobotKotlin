@@ -12,24 +12,14 @@ package frc.robot
  */
 object RobotContainer
 {
-    // Replace with CommandPS4Controller or CommandJoystick if needed
-//    private val driverController = CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT)
     private val driverController = DriverController
+
     init
     {
         configureBindings()
-        // Reference the Autos object so that it is initialized, placing the chooser on the dashboard
-//        Autos
+
         driverController.setDefaultCommands()
     }
 
-    private fun configureBindings()
-    {
-        // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-//        Trigger { ExampleSubsystem.exampleCondition() }.onTrue(ExampleCommand())
-
-        // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-        // cancelling on release.
-//        driverController.b().whileTrue(ExampleSubsystem.exampleMethodCommand())
-    }
+    private fun configureBindings() {}
 }

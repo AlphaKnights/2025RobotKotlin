@@ -24,7 +24,7 @@ class TalonSwerveModule(
     private val driveMotor = TalonFX(driveMotorId)
     private val turnMotor = TalonFX(turnMotorId)
     private val encoder = CANcoder(encoderId)
-    private var desiredState = SwerveModuleState(0.0, Rotation2d(encoder.position.valueAsDouble + offset))
+    private var desiredState = SwerveModuleState(0.0, Rotation2d.fromRotations(encoder.position.valueAsDouble + offset))
 
     init {
         val driveMotorConfig = TalonFXConfiguration().apply { 
@@ -104,13 +104,6 @@ class TalonSwerveModule(
         driveMotor.setPosition(0.0)
     }
 
-    fun getState(): SwerveModuleState {
-        return SwerveModuleState(
-            driveMotor.velocity.valueAsDouble,
-            Rotation2d.fromRotations(turnMotor.position.valueAsDouble + offset)
-        )
-    }
-
     fun getPosition(): SwerveModulePosition {
         return SwerveModulePosition(
             driveMotor.position.valueAsDouble,
@@ -131,7 +124,4 @@ class TalonSwerveModule(
         this.desiredState = desiredState
     }
 
-    fun resetEncoders() {
-        driveMotor.setPosition(0.0)
-    }
 }
