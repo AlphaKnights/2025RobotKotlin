@@ -1,7 +1,6 @@
 package frc.robot.subsystems
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration
-import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.controls.VelocityVoltage
@@ -14,8 +13,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 
 import frc.robot.Constants.ModuleConstants
-
-import kotlin.math.PI
 
 
 class TalonSwerveModule(
@@ -110,26 +107,26 @@ class TalonSwerveModule(
     fun getState(): SwerveModuleState {
         return SwerveModuleState(
             driveMotor.velocity.valueAsDouble,
-            Rotation2d(turnMotor.position.valueAsDouble * 2 * PI + offset)
+            Rotation2d.fromRotations(turnMotor.position.valueAsDouble + offset)
         )
     }
 
     fun getPosition(): SwerveModulePosition {
         return SwerveModulePosition(
             driveMotor.position.valueAsDouble,
-            Rotation2d(turnMotor.position.valueAsDouble * 2 * PI + offset)
+            Rotation2d.fromRotations(turnMotor.position.valueAsDouble + offset)
         )
     }
 
     fun setDesiredState(desiredState: SwerveModuleState) {
         val correctedState = SwerveModuleState(
             desiredState.speedMetersPerSecond,
-            Rotation2d(desiredState.angle.radians - this.offset)
+            Rotation2d.fromRotations(desiredState.angle.rotations - this.offset)
         )
-        correctedState.optimize(Rotation2d(encoder.position.valueAsDouble * 2 * PI))
+        correctedState.optimize(Rotation2d.fromRotations(encoder.position.valueAsDouble))
 
         driveMotor.setControl(VelocityVoltage(correctedState.speedMetersPerSecond))
-        turnMotor.setControl(PositionVoltage(correctedState.angle.radians / (2 * PI)))
+        turnMotor.setControl(PositionVoltage(correctedState.angle.rotations))
 
         this.desiredState = desiredState
     }

@@ -16,25 +16,25 @@ object DriveSubsystem : SubsystemBase()
         Constants.DriveConstants.FRONT_LEFT_DRIVING_ID,
         Constants.DriveConstants.FRONT_LEFT_TURNING_ID,
         Constants.DriveConstants.FRONT_LEFT_CANCODER_ID,
-        Constants.DriveConstants.FRONT_LEFT_CHASSIS_ANGLUAR_OFFSET
+        Constants.DriveConstants.FRONT_LEFT_CHASSIS_ANGULAR_OFFSET
     )
     private var frontRight: TalonSwerveModule = TalonSwerveModule(
         Constants.DriveConstants.FRONT_RIGHT_DRIVING_ID,
         Constants.DriveConstants.FRONT_RIGHT_TURNING_ID,
         Constants.DriveConstants.FRONT_RIGHT_CANCODER_ID,
-        Constants.DriveConstants.FRONT_RIGHT_CHASSIS_ANGLUAR_OFFSET
+        Constants.DriveConstants.FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET
     )
     private var rearLeft: TalonSwerveModule = TalonSwerveModule(
         Constants.DriveConstants.REAR_LEFT_DRIVING_ID,
         Constants.DriveConstants.REAR_LEFT_TURNING_ID,
         Constants.DriveConstants.REAR_LEFT_CANCODER_ID,
-        Constants.DriveConstants.BACK_LEFT_CHASSIS_ANGLUAR_OFFSET
+        Constants.DriveConstants.BACK_LEFT_CHASSIS_ANGULAR_OFFSET
     )
     private var rearRight: TalonSwerveModule = TalonSwerveModule(
         Constants.DriveConstants.REAR_RIGHT_DRIVING_ID,
         Constants.DriveConstants.REAR_RIGHT_TURNING_ID,
         Constants.DriveConstants.REAR_RIGHT_CANCODER_ID,
-        Constants.DriveConstants.BACK_RIGHT_CHASSIS_ANGLUAR_OFFSET
+        Constants.DriveConstants.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET
     )
     private var gyro: AHRS = AHRS(AHRS.NavXComType.kMXP_SPI)
     private var odometry: SwerveDriveOdometry
@@ -69,16 +69,12 @@ object DriveSubsystem : SubsystemBase()
         )
     }
 
-    fun getPose(): Pose2d {
-        return odometry.poseMeters
-    }
-
     fun drive(
          speeds: ChassisSpeeds,
          fieldRelative: Boolean,
          rateLimit: Boolean,
     ) {
-        var swerveModuleStates = Constants.DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
+        var swerveModuleStates = Constants.DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds)
 
         if (fieldRelative)
             swerveModuleStates = Constants.DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, Rotation2d.fromDegrees(gyro.angle)))

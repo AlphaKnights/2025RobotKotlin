@@ -5,9 +5,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.util.WPILibVersion
-import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import frc.robot.commands.Autos
 
 /**
  * The functions in this object (which basically functions as a singleton class) are called automatically
@@ -23,11 +21,9 @@ object Robot : TimedRobot()
 {
     /**
      * The autonomous command to run. While a default value is set here,
-     * the [autonomousInit] method will set it to the value selected in
+     * the method will set it to the value selected in
      *the  AutoChooser on the dashboard.
      */
-    private var autonomousCommand: Command = Autos.defaultAutonomousCommand
-
     init
     {
         // Kotlin initializer block, which effectually serves as the constructor code.
@@ -76,8 +72,6 @@ object Robot : TimedRobot()
     {
         // We store the command as a Robot property in the rare event that the selector on the dashboard
         // is modified while the command is running since we need to access it again in teleopInit()
-        autonomousCommand = Autos.selectedAutonomousCommand
-        autonomousCommand.schedule()
     }
 
     /** This method is called periodically during autonomous.  */
@@ -89,7 +83,6 @@ object Robot : TimedRobot()
     {
         // This makes sure that the autonomous stops running when teleop starts running. If you want the
         // autonomous to continue until interrupted by another command, remove this line or comment it out.
-        autonomousCommand.cancel()
     }
 
     /** This method is called periodically during operator control.  */
