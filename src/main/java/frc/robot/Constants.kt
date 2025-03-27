@@ -17,6 +17,7 @@ object Constants
     object OperatorConstants
     {
         const val DRIVER_CONTROLLER_PORT = 0
+        const val DRIVE_DEADBAND = 0.4
     }
 
     object DriveConstants {

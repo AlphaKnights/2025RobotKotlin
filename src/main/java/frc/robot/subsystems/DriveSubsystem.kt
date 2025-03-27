@@ -2,7 +2,6 @@ package frc.robot.subsystems
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 
-import frc.robot.subsystems.TalonSwerveModule
 import frc.robot.Constants
 import com.studica.frc.AHRS
 import edu.wpi.first.math.geometry.Pose2d
@@ -18,27 +17,27 @@ object DriveSubsystem : SubsystemBase()
         Constants.DriveConstants.FRONT_LEFT_TURNING_ID,
         Constants.DriveConstants.FRONT_LEFT_CANCODER_ID,
         Constants.DriveConstants.FRONT_LEFT_CHASSIS_ANGLUAR_OFFSET
-    );
+    )
     private var frontRight: TalonSwerveModule = TalonSwerveModule(
         Constants.DriveConstants.FRONT_RIGHT_DRIVING_ID,
         Constants.DriveConstants.FRONT_RIGHT_TURNING_ID,
         Constants.DriveConstants.FRONT_RIGHT_CANCODER_ID,
         Constants.DriveConstants.FRONT_RIGHT_CHASSIS_ANGLUAR_OFFSET
-    );
+    )
     private var rearLeft: TalonSwerveModule = TalonSwerveModule(
         Constants.DriveConstants.REAR_LEFT_DRIVING_ID,
         Constants.DriveConstants.REAR_LEFT_TURNING_ID,
         Constants.DriveConstants.REAR_LEFT_CANCODER_ID,
         Constants.DriveConstants.BACK_LEFT_CHASSIS_ANGLUAR_OFFSET
-    );
+    )
     private var rearRight: TalonSwerveModule = TalonSwerveModule(
         Constants.DriveConstants.REAR_RIGHT_DRIVING_ID,
         Constants.DriveConstants.REAR_RIGHT_TURNING_ID,
         Constants.DriveConstants.REAR_RIGHT_CANCODER_ID,
         Constants.DriveConstants.BACK_RIGHT_CHASSIS_ANGLUAR_OFFSET
-    );
+    )
     private var gyro: AHRS = AHRS(AHRS.NavXComType.kMXP_SPI)
-    private var odometry: SwerveDriveOdometry;
+    private var odometry: SwerveDriveOdometry
 
     init {
         gyro.enableBoardlevelYawReset(false)
@@ -103,5 +102,9 @@ object DriveSubsystem : SubsystemBase()
         rearRight.setDesiredState(
             SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0))
         )
+    }
+
+    fun zeroHeading() {
+        gyro.reset()
     }
 }
