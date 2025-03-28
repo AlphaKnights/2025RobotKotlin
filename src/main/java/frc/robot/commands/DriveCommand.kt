@@ -11,7 +11,7 @@ class DriveCommand(
     private val y: () -> Double,
     private val rot: () -> Double,
     private val heading: () -> Boolean
-    ): Command() {
+) : Command() {
     init {
         addRequirements(swerveDrive)
     }
@@ -34,6 +34,7 @@ class DriveCommand(
             fieldRelative = true,
         )
     }
+
     override fun end(interrupted: Boolean) {
         swerveDrive.drive(
             ChassisSpeeds(

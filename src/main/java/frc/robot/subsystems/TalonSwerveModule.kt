@@ -1,17 +1,16 @@
 package frc.robot.subsystems
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration
-import com.ctre.phoenix6.hardware.TalonFX
-import com.ctre.phoenix6.hardware.CANcoder
-import com.ctre.phoenix6.controls.VelocityVoltage
 import com.ctre.phoenix6.controls.PositionVoltage
-import com.ctre.phoenix6.signals.NeutralModeValue
+import com.ctre.phoenix6.controls.VelocityVoltage
+import com.ctre.phoenix6.hardware.CANcoder
+import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue
 import com.ctre.phoenix6.signals.InvertedValue
+import com.ctre.phoenix6.signals.NeutralModeValue
 import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.kinematics.SwerveModulePosition
-
+import edu.wpi.first.math.kinematics.SwerveModuleState
 import frc.robot.Constants.ModuleConstants
 
 
@@ -27,7 +26,7 @@ class TalonSwerveModule(
     private var desiredState = SwerveModuleState(0.0, Rotation2d.fromRotations(encoder.position.valueAsDouble + offset))
 
     init {
-        val driveMotorConfig = TalonFXConfiguration().apply { 
+        val driveMotorConfig = TalonFXConfiguration().apply {
             CurrentLimits.apply {
                 SupplyCurrentLimitEnable = true
                 SupplyCurrentLimit = ModuleConstants.DRIVING_MOTOR_CURRENT_LIMIT
@@ -57,8 +56,8 @@ class TalonSwerveModule(
             Feedback.apply {
                 SensorToMechanismRatio = ModuleConstants.DRIVE_RATIO
             }
-         }
-        
+        }
+
         driveMotor.configurator.apply(driveMotorConfig)
 
         val turnMotorConfig = TalonFXConfiguration().apply {
@@ -72,7 +71,7 @@ class TalonSwerveModule(
                 FeedbackRemoteSensorID = encoderId
                 FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder
             }
-            
+
             ClosedLoopGeneral.apply {
                 ContinuousWrap = true
             }
