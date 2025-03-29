@@ -5,9 +5,10 @@ import frc.robot.Constants
 import com.fasterxml.jackson.databind.ObjectMapper
 import edu.wpi.first.math.geometry.Pose3d
 import frc.robot.LimelightHelpers.LimelightResults
+import frc.robot.interfaces.PoseProvider
 import java.net.URL
 
-object LimelightSubsystem {
+object LimelightSubsystem : PoseProvider {
     private var failed: Boolean = false
 
     private fun parseJson(json: String): LimelightResults? {
@@ -19,7 +20,7 @@ object LimelightSubsystem {
         }
     }
 
-    fun getTagPosition(): Pose3d? {
+    override fun getTagPosition(): Pose3d? {
         if (failed) {
             return null
         }
