@@ -7,8 +7,10 @@ package frc.robot
  * `const` definitions. Other constant types should use `val` definitions.
  */
 
+import com.revrobotics.spark.config.SparkBaseConfig
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
+import edu.wpi.first.math.util.Units
 
 object Constants
 {
@@ -16,14 +18,23 @@ object Constants
     {
         const val DRIVER_CONTROLLER_PORT = 1
         const val DRIVE_DEADBAND = 0.4
+
+        const val BUTTON_BOARD_PORT = 2
+        const val ELEVATOR_UP_BUTTON = 8
+        const val ELEVATOR_DOWN_BUTTON = 10
+
+        const val ELEVATOR_LVL_1_BUTTON = 1
+        const val ELEVATOR_LVL_2_BUTTON = 2
+        const val ELEVATOR_LVL_3_BUTTON = 3
+        const val ELEVATOR_LVL_4_BUTTON = 4
     }
 
     object DriveConstants {
         const val MAX_METERS_PER_SECOND = 15
         const val MAX_ANGULAR_SPEED = 20
 
-        private val TRACK_WIDTH = Units.inchesToMeters(inches=26.5)
-        private val WHEEL_BASE = Units.inchesToMeters(inches=26.5)
+        private val TRACK_WIDTH = Units.inchesToMeters(26.5)
+        private val WHEEL_BASE = Units.inchesToMeters(26.5)
 
         private val MODULE_POSITIONS = arrayOf(
             Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
@@ -73,6 +84,54 @@ object Constants
 
         const val DRIVING_MOTOR_CURRENT_LIMIT = 40.0
         const val TURNING_MOTOR_CURRENT_LIMIT = 40.0
+    }
+
+    object ElevatorConstants {
+        const val LEFT_MOTOR_CAN_ID = 4
+        const val RIGHT_MOTOR_CAN_ID = 32
+
+        const val P = 0.08
+        const val I = 0.0
+        const val D = 0.0
+
+        val IDLE_MODE = SparkBaseConfig.IdleMode.kCoast
+
+        const val FORWARD_SOFT_LIMIT = 100.0
+        const val REVERSE_SOFT_LIMIT = -100.0
+
+        const val CURRENT_LIMIT = 40
+
+        const val MAX_ELEVATOR_SPEED = 3.0
+
+        const val LVL_1_HEIGHT = 0.0
+        const val LVL_2_HEIGHT = 35.0
+        const val LVL_3_HEIGHT  = 60.0
+        const val LVL_4_HEIGHT = 50.0
+    }
+
+    enum class ElevatorDirection
+    {
+        UP,
+        DOWN,
+    }
+
+    object LimelightConstants {
+        const val BROADCAST_PORT = 5809
+        const val LISTEN_PORT = 5809
+        const val TIMEOUT = 500 // milliseconds
+        const val IP_ADDR = "10.66.95.3"
+        const val NAME = "limelight"
+    }
+
+    object AlignConstants {
+        const val ALIGN_DEADZONE = 0.03
+        val ALIGN_ROT_DEADZONE = Units.degreesToRadians(5.0)
+
+        const val FINE_ALIGN_DEADZONE = 0.03
+        val FINE_ALIGN_ROT_DEADZONE = Units.degreesToRadians(20.0)
+
+        const val MAX_SPEED = 1.0
+        const val MAX_ANGULAR_SPEED = 1.0
     }
 }
 

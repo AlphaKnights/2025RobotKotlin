@@ -10,28 +10,27 @@ object DriverController
     private val swerveDrive = DriveSubsystem
     private val joystick = Joystick(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT)
 
-    fun setDefaultCommands() {
+    init {
         swerveDrive.defaultCommand = DriveCommand(
-            swerveDrive,
-            {
+            x={
                 -applyDeadband(
                     joystick.getRawAxis(1),
                     Constants.OperatorConstants.DRIVE_DEADBAND
                 ) * (-joystick.getRawAxis(3) + 1) / 2
             },
-            {
+            y={
                 -applyDeadband(
                     joystick.getRawAxis(0),
                     Constants.OperatorConstants.DRIVE_DEADBAND
                 ) * (-joystick.getRawAxis(3) + 1)/2
             },
-            {
+            rot={
                 -applyDeadband(
                     joystick.getRawAxis(2),
                     Constants.OperatorConstants.DRIVE_DEADBAND
                 ) * (-joystick.getRawAxis(3) + 1)/2
             },
-            {
+            heading={
                 joystick.getRawButton(11)
             }
         )

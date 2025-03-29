@@ -95,7 +95,6 @@ class TalonSwerveModule(
                 NeutralMode = NeutralModeValue.Brake
                 Inverted = InvertedValue.Clockwise_Positive
             }
-
         }
 
         turnMotor.configurator.apply(turnMotorConfig)

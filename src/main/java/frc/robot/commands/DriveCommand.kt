@@ -6,14 +6,13 @@ import frc.robot.Constants
 import frc.robot.subsystems.DriveSubsystem
 
 class DriveCommand(
-    private val swerveDrive: DriveSubsystem,
     private val x: () -> Double,
     private val y: () -> Double,
     private val rot: () -> Double,
     private val heading: () -> Boolean
 ) : Command() {
     init {
-        addRequirements(swerveDrive)
+        addRequirements(DriveSubsystem)
     }
 
     override fun execute() {
@@ -22,10 +21,10 @@ class DriveCommand(
         val heading: Boolean = heading()
 
         if (heading) {
-            swerveDrive.zeroHeading()
+            DriveSubsystem.zeroHeading()
         }
 
-        swerveDrive.drive(
+        DriveSubsystem.drive(
             ChassisSpeeds(
                 x() * Constants.DriveConstants.MAX_METERS_PER_SECOND,
                 y() * Constants.DriveConstants.MAX_METERS_PER_SECOND,
@@ -36,7 +35,7 @@ class DriveCommand(
     }
 
     override fun end(interrupted: Boolean) {
-        swerveDrive.drive(
+        DriveSubsystem.drive(
             ChassisSpeeds(
                 0.0, 0.0, 0.0
             ),
