@@ -9,12 +9,13 @@ import kotlin.math.*
 
 object AutoAlignCalc {
     var poseProvider: PoseProvider = LimelightSubsystem
+
     fun getAlignSpeeds(
         goalX: Double,
         goalZ: Double,
         timer: Timer
     ) : ChassisSpeeds? {
-        val limelightResults: Pose3d = poseProvider.getTagPosition() ?: return null
+        val limelightResults: Pose3d = poseProvider.tagPose ?: return null
 
         timer.reset()
 

@@ -116,9 +116,10 @@ object Constants
     }
 
     object LimelightConstants {
+        const val POLLING_RATE = 20L
         const val BROADCAST_PORT = 5809
         const val LISTEN_PORT = 5809
-        const val TIMEOUT = 500 // milliseconds
+        const val TIMEOUT = 500L // milliseconds
         const val IP_ADDR = "10.66.95.3"
         const val NAME = "limelight"
     }

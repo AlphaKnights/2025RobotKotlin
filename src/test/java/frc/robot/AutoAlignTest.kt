@@ -20,7 +20,7 @@ internal class AutoAlignTest {
 
     @Test
     fun `getAlignSpeeds returns null when Limelight has no target`() {
-        whenever(mockPoseProvider.getTagPosition()).thenReturn(null)
+        whenever(mockPoseProvider.tagPose).thenReturn(null)
         whenever(mockTimer.get()).thenReturn(2.0)
 
         AutoAlignCalc.poseProvider = mockPoseProvider
@@ -86,7 +86,7 @@ internal class AutoAlignTest {
             val offsets = test[1] as DoubleArray
             val expectedChassisSpeeds = test[2] as ChassisSpeeds
 
-            whenever(mockPoseProvider.getTagPosition()).thenReturn(pose)
+            whenever(mockPoseProvider.tagPose).thenReturn(pose)
             whenever(mockTimer.get()).thenReturn(2.0)
 
             AutoAlignCalc.poseProvider = mockPoseProvider
