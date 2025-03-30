@@ -41,7 +41,7 @@ object LimelightSubsystem : PoseProvider {
             // Send a GET request to the Limelight
             val client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
-                .connectTimeout(java.time.Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
+                .connectTimeout(Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
                 .build()
 
             val pingResult = withContext(Dispatchers.IO) {
