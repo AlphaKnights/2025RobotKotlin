@@ -58,8 +58,6 @@ class TalonSwerveModule(
             }
         }
 
-        driveMotor.configurator.apply(driveMotorConfig)
-
         val turnMotorConfig = TalonFXConfiguration().apply {
             CurrentLimits.apply {
                 SupplyCurrentLimitEnable = true
@@ -97,6 +95,7 @@ class TalonSwerveModule(
             }
         }
 
+        driveMotor.configurator.apply(driveMotorConfig)
         turnMotor.configurator.apply(turnMotorConfig)
 
         driveMotor.setPosition(0.0)

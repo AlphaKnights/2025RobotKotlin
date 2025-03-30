@@ -58,7 +58,7 @@ object AutoAlignCalc {
 
         return ChassisSpeeds(
             z * dist * Constants.AlignConstants.MAX_SPEED,
-            x * dist * Constants.AlignConstants.MAX_SPEED,
+            -x * dist * Constants.AlignConstants.MAX_SPEED,
             rotSign * angularDistance * Constants.AlignConstants.MAX_ANGULAR_SPEED,
         )
 
