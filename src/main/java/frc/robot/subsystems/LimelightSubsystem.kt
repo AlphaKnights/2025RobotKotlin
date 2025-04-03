@@ -22,6 +22,8 @@ object LimelightSubsystem : PoseProvider {
         get() = runBlocking { mutex.withLock { _tagPose } }
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
+    var limelightService: LimelightService = HttplimelightService()
+
     init {
         // Start the coroutine to poll the Limelight
         coroutineScope.launch {
@@ -33,37 +35,45 @@ object LimelightSubsystem : PoseProvider {
     }
 
     private suspend fun getTagPosition() {
-        if (!coroutineScope.isActive) {
-            return
-        }
+        if (!coroutineScope.isActive) return
+        
 
-        try {
-            // Send a GET request to the Limelight
-            val client = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .connectTimeout(Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
-                .build()
+        // try {
+        //     // Send a GET request to the Limelight
+        //     val client = HttpClient.newBuilder()
+        //         .version(HttpClient.Version.HTTP_1_1)
+        //         .connectTimeout(Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
+        //         .build()
 
-            val pingResult = withContext(Dispatchers.IO) {
-                client.send(
-                    HttpRequest.newBuilder()
-                        .uri(URL("${Constants.LimelightConstants.IP_ADDR}/results").toURI())
-                        .timeout(Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
-                        .GET()
-                        .build(),
-                    HttpResponse.BodyHandlers.ofString()
-                )
-            }
+        //     val pingResult = withContext(Dispatchers.IO) {
+        //         client.send(
+        //             HttpRequest.newBuilder()
+        //                 .uri(URL("${Constants.LimelightConstants.IP_ADDR}/results").toURI())
+        //                 .timeout(Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
+        //                 .GET()
+        //                 .build(),
+        //             HttpResponse.BodyHandlers.ofString()
+        //         )
+        //     }
 
-            val results = parseJson(pingResult.body())
+        //     val results = parseJson(pingResult.body())
 
-            if (results == null) {
-                setTagPose(null)
-            }
+        //     if (results == null) {
+        //         setTagPose(null)
+        //         return
+        //     }
 
-            setTagPose(results!!.targets_Fiducials[0].targetPose_RobotSpace)
-        } catch (e: Exception) {
-            _tagPose = null
+        //     setTagPose(results!!.targets_Fiducials[0].targetPose_RobotSpace)
+        // } catch (e: Exception) {
+        //     _tagPose = null
+        //     coroutineScope.cancel()
+        // }
+        val fetchResults: LimelightResults? = 
+            parseJson(limelightService.fetchResults())
+        
+        setTagPose(fetchResults)
+        
+        if (fetchResults == null) {
             coroutineScope.cancel()
         }
     }
@@ -74,10 +84,11 @@ object LimelightSubsystem : PoseProvider {
         }
     }
 
-    private fun parseJson(json: String): LimelightResults? {
+    private fun parseJson(json: String?): LimelightResults? {
+        val checkedJson: String = json ?: return null
         val mapper: ObjectMapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         return try {
-            mapper.readValue(json, LimelightResults::class.java)
+            mapper.readValue(checkedJson, LimelightResults::class.java)
         } catch (e: Exception) {
             null
         }

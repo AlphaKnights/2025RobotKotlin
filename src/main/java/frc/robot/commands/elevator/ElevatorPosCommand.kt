@@ -14,5 +14,7 @@ class ElevatorPosCommand (
         ElevatorSubsystem.setPosition(targetPosition)
     }
 
-    override fun isFinished(): Boolean { return false }
+    override fun isFinished(): Boolean { 
+        return abs(ElevatorSubsystem.getPosition() - targetPosition) < 5 
+    }
 }

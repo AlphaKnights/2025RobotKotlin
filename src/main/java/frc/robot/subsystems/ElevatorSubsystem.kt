@@ -99,6 +99,10 @@ object ElevatorSubsystem : SubsystemBase() {
         rightPIDController.setReference(position, SparkBase.ControlType.kPosition)
     }
 
+    fun getPosition(): Double {
+        return(leftMotor.encoder.getPosition())
+    }
+
     fun stop(): Unit {
         leftMotor.stopMotor()
         rightMotor.stopMotor()
