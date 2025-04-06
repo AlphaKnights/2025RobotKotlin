@@ -1,4 +1,4 @@
-package frc.package.interfaces
+package frc.robot.interfaces
 
 interface LimelightService {
     suspend fun fetchResults(): String?

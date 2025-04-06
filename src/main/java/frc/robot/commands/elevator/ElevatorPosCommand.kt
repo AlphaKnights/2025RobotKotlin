@@ -2,6 +2,7 @@ package frc.robot.commands.elevator
 
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.ElevatorSubsystem
+import kotlin.math.abs
 
 class ElevatorPosCommand (
     private val targetPosition: Double,

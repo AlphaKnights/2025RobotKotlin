@@ -1,4 +1,14 @@
-package frc.robot
+package frc.robot.subsystems
+
+import frc.robot.Constants
+import frc.robot.interfaces.LimelightService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.URL
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.time.Duration
 
 object HttpLimelightService : LimelightService {
     private val client = HttpClient.newBuilder()
@@ -7,7 +17,7 @@ object HttpLimelightService : LimelightService {
         .build()
 
         override suspend fun fetchResults(): String? {
-            val result: String?
+            var result: String?
             try {
                 val response = withContext(Dispatchers.IO) {
                     client.send(

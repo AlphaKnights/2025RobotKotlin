@@ -5,7 +5,7 @@ import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.ClosedLoopConfig
 import com.revrobotics.spark.config.SparkMaxConfig
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants.ElevatorConstants
 
 object ElevatorSubsystem : SubsystemBase() {
@@ -89,21 +89,21 @@ object ElevatorSubsystem : SubsystemBase() {
         )
     }
 
-    fun move(speed: Double): Unit {
+    fun move(speed: Double) {
         leftMotor.set(speed)
         rightMotor.set(speed)
     }
 
-    fun setPosition(position: Double): Unit {
+    fun setPosition(position: Double) {
         leftPIDController.setReference(position, SparkBase.ControlType.kPosition)
         rightPIDController.setReference(position, SparkBase.ControlType.kPosition)
     }
 
     fun getPosition(): Double {
-        return(leftMotor.encoder.getPosition())
+        return(leftMotor.encoder.position)
     }
 
-    fun stop(): Unit {
+    fun stop() {
         leftMotor.stopMotor()
         rightMotor.stopMotor()
     }
