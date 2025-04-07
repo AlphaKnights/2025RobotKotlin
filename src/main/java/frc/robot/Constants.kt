@@ -8,6 +8,7 @@ package frc.robot
  */
 
 import com.revrobotics.spark.config.SparkBaseConfig
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.util.Units
@@ -45,10 +46,10 @@ object Constants
 
         val DRIVE_KINEMATICS = SwerveDriveKinematics(*MODULE_POSITIONS)
 
-        const val FRONT_LEFT_CHASSIS_ANGULAR_OFFSET = -0.764892578125
-        const val FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET = 0.75
-        const val BACK_LEFT_CHASSIS_ANGULAR_OFFSET = 0.079833984375
-        const val BACK_RIGHT_CHASSIS_ANGULAR_OFFSET = 0.367919921875
+        val FRONT_LEFT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(-0.764892578125)
+        val FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.75)
+        val BACK_LEFT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.079833984375)
+        val BACK_RIGHT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.367919921875)
 
         const val FRONT_LEFT_DRIVING_ID = 5
         const val REAR_LEFT_DRIVING_ID = 7
