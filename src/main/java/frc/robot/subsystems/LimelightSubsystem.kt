@@ -24,22 +24,32 @@ object LimelightSubsystem : PoseProvider {
         // Start the coroutine to poll the Limelight
         coroutineScope.launch {
             while (true) {
-                updateTagPosition()
+                setTagPose(updateTagPosition())
                 delay(Constants.LimelightConstants.POLLING_RATE)
             }
         }
     }
 
-    suspend fun updateTagPosition() {
-        if (!coroutineScope.isActive) return
+    suspend fun updateTagPosition(): Pose3d? = coroutineScope {
+        try {
+            ensureActive() // Atomic cancellation check
 
-        val fetchResults: LimelightResults? =
-            parseJson(limelightService.fetchResults())
+            val results = limelightService.fetchResults()
+            if (results == null) {
+                cancel("Limelight returned null results")
+                return@coroutineScope null
+            }
 
-        setTagPose(fetchResults?.targets_Fiducials?.getOrNull(0)?.targetPose_RobotSpace)
+            return@coroutineScope parseJson(results)
+                ?.targets_Fiducials
+                ?.getOrNull(0)
+                ?.targetPose_RobotSpace
 
-        if (fetchResults == null) {
-            coroutineScope.cancel()
+        } catch (e: CancellationException) {
+            throw e // Re-throw structured cancellation
+        } catch (e: Exception) {
+            println("Limelight update failed: ${e.message}")
+            return@coroutineScope null
         }
     }
 

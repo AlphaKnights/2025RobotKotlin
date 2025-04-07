@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.reset
 import org.mockito.kotlin.whenever
 
 internal class LimelightTest {
@@ -27,6 +28,7 @@ internal class LimelightTest {
     fun tearDown() {
         LimelightSubsystem.limelightService = originalService
         LimelightSubsystem.coroutineScope.cancel()
+        reset(mockLimelightService)
     }
 
     @Test
@@ -153,9 +155,9 @@ internal class LimelightTest {
         whenever(mockLimelightService.fetchResults()).thenReturn(validEmptyJson)
         LimelightSubsystem.limelightService = mockLimelightService
 
-        LimelightSubsystem.updateTagPosition()
+        val result = LimelightSubsystem.updateTagPosition()
 
-        assertNull(LimelightSubsystem.tagPose)
+        assertNull(result)
     }
 
     @Test
@@ -227,8 +229,7 @@ internal class LimelightTest {
         whenever(mockLimelightService.fetchResults()).thenReturn(validJson)
         LimelightSubsystem.limelightService = mockLimelightService
 
-        LimelightSubsystem.updateTagPosition()
-        val tagPose = LimelightSubsystem.tagPose
+        val tagPose = LimelightSubsystem.updateTagPosition()
         assert(tagPose != null)
         assertEquals(-0.09991902572799474, tagPose!!.x)
     }
