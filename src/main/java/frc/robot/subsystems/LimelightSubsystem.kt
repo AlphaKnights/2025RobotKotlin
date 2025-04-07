@@ -16,7 +16,7 @@ object LimelightSubsystem : PoseProvider {
     private var _tagPose: Pose3d? = null
     override val tagPose: Pose3d?
         get() = runBlocking { mutex.withLock { _tagPose } }
-    private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    var coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     var limelightService: LimelightService = HttpLimelightService
 
@@ -35,15 +35,15 @@ object LimelightSubsystem : PoseProvider {
 
         val fetchResults: LimelightResults? =
             parseJson(limelightService.fetchResults())
-        
-        setTagPose(fetchResults?.targets_Fiducials?.get(0)?.targetPose_RobotSpace)
-        
+
+        setTagPose(fetchResults?.targets_Fiducials?.getOrNull(0)?.targetPose_RobotSpace)
+
         if (fetchResults == null) {
             coroutineScope.cancel()
         }
     }
 
-    private suspend fun setTagPose(pose: Pose3d?) {
+    suspend fun setTagPose(pose: Pose3d?) {
         mutex.withLock {
             _tagPose = pose
         }
