@@ -16,12 +16,11 @@ object LimelightSubsystem : PoseProvider {
     private var _tagPose: Pose3d? = null
     override val tagPose: Pose3d?
         get() = runBlocking { mutex.withLock { _tagPose } }
-    var coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    var coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     var limelightService: LimelightService = HttpLimelightService
 
-    init {
-        // Start the coroutine to poll the Limelight
+    fun startPolling() {
         coroutineScope.launch {
             while (true) {
                 setTagPose(updateTagPosition())
@@ -30,26 +29,16 @@ object LimelightSubsystem : PoseProvider {
         }
     }
 
-    suspend fun updateTagPosition(): Pose3d? = coroutineScope {
-        try {
-            ensureActive() // Atomic cancellation check
+    suspend fun updateTagPosition(): Pose3d? {
+        // Atomic cancellation check (no race condition)
+        coroutineScope.ensureActive()
 
-            val results = limelightService.fetchResults()
-            if (results == null) {
-                cancel("Limelight returned null results")
-                return@coroutineScope null
-            }
-
-            return@coroutineScope parseJson(results)
-                ?.targets_Fiducials
-                ?.getOrNull(0)
-                ?.targetPose_RobotSpace
-
-        } catch (e: CancellationException) {
-            throw e // Re-throw structured cancellation
-        } catch (e: Exception) {
-            println("Limelight update failed: ${e.message}")
-            return@coroutineScope null
+        // Fetch results within the coroutine scope lifecycle
+        limelightService.fetchResults()?.let { json ->
+            return parseJson(json)?.targets_Fiducials?.getOrNull(0)?.targetPose_RobotSpace
+        } ?: run {
+            coroutineScope.cancel("Limelight returned null results")
+            return null
         }
     }
 

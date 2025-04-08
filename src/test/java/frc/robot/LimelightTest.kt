@@ -1,14 +1,15 @@
-// TODO: Test for race conditions and coroutine cancellation
-
 package frc.robot
 
+import edu.wpi.first.math.geometry.Pose3d
 import frc.robot.interfaces.LimelightService
 import frc.robot.subsystems.LimelightSubsystem
 import kotlinx.coroutines.*
+import kotlinx.coroutines.test.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.whenever
@@ -16,12 +17,15 @@ import org.mockito.kotlin.whenever
 internal class LimelightTest {
     private val mockLimelightService: LimelightService = mock()
     private lateinit var originalService: LimelightService
+    private val testScheduler = TestCoroutineScheduler()
+    private val testDispatcher = StandardTestDispatcher(testScheduler)
 
     @BeforeEach
     fun setup() {
         originalService = LimelightSubsystem.limelightService
-        LimelightSubsystem.coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
+        LimelightSubsystem.limelightService = mockLimelightService // Mock first!
+        LimelightSubsystem.coroutineScope = CoroutineScope(testDispatcher + SupervisorJob())
+        LimelightSubsystem.startPolling()
     }
 
     @AfterEach
@@ -137,8 +141,9 @@ internal class LimelightTest {
         assertEquals(0, result!!.targets_Fiducials?.size)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `updateTagPosition sets tagPose correctly when Limelight has no target`() = runBlocking {
+    fun `updateTagPosition sets tagPose correctly when Limelight has no target`() = runTest {
         val validEmptyJson = """
             {
             "Classifier": [],
@@ -153,8 +158,8 @@ internal class LimelightTest {
         """
 
         whenever(mockLimelightService.fetchResults()).thenReturn(validEmptyJson)
-        LimelightSubsystem.limelightService = mockLimelightService
 
+        advanceUntilIdle()
         val result = LimelightSubsystem.updateTagPosition()
 
         assertNull(result)
@@ -234,4 +239,66 @@ internal class LimelightTest {
         assertEquals(-0.09991902572799474, tagPose!!.x)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `mutex prevents race conditions in tagPose updates`() = runTest {
+        val testScope = CoroutineScope(UnconfinedTestDispatcher(testScheduler))
+        LimelightSubsystem.coroutineScope = testScope
+
+        val numCoroutines = 100
+        val jobs = List(numCoroutines) { idx ->
+            testScope.launch {
+                repeat(1000) {
+                    LimelightSubsystem.setTagPose(Pose3d(idx.toDouble(), 0.0, 0.0, null))
+                }
+            }
+        }
+
+        testScheduler.advanceUntilIdle() // Execute all coroutines instantly
+        jobs.forEach { it.join() }
+
+        // Verify final state is consistent
+        val finalPose = LimelightSubsystem.tagPose
+        assertNotNull(finalPose)
+        assertEquals(numCoroutines - 1.0, finalPose?.x) // Last write wins
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `mutex ensures atomicity under worst-case scheduling`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        val testScope = CoroutineScope(testDispatcher)
+        LimelightSubsystem.coroutineScope = testScope
+
+        // Launch two coroutines that will interleave execution
+        testScope.launch {
+            LimelightSubsystem.setTagPose(Pose3d(1.0, 0.0, 0.0, null))
+        }
+
+        testScope.launch {
+            LimelightSubsystem.setTagPose(Pose3d(2.0, 0.0, 0.0, null))
+        }
+
+        testScheduler.advanceUntilIdle() // Force interleaved execution
+        assertEquals(2.0, LimelightSubsystem.tagPose?.x) // Last writer wins
+    }
+
+    @Test
+    fun `coroutineScope cancels when fetchResults returns null`() = runTest(testScheduler) {
+        mock<LimelightService>().apply {
+            whenever(fetchResults()).thenReturn(null)
+        }
+
+        // Capture the exception
+        val exception = assertThrows<CancellationException> {
+            LimelightSubsystem.updateTagPosition()
+            testScheduler.advanceUntilIdle()
+        }
+
+        // Verify cancellation details
+        assertEquals("Limelight returned null results", exception.message)
+        assertFalse(LimelightSubsystem.coroutineScope.isActive)
+        assertNull(LimelightSubsystem.tagPose)
+    }
 }
