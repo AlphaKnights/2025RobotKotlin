@@ -2,27 +2,19 @@ package frc.robot.subsystems
 
 import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.wpilibj.Timer
 import frc.robot.Constants
-import frc.robot.interfaces.PoseProvider
 import kotlin.math.*
 
 object AutoAlignCalc {
-    var poseProvider: PoseProvider = LimelightSubsystem
-
     fun getAlignSpeeds(
         goalX: Double,
         goalZ: Double,
-        timer: Timer
-    ) : ChassisSpeeds? {
-        val limelightResults: Pose3d = poseProvider.tagPose ?: return null
-
-        timer.reset()
-
+        curPose: Pose3d
+    ) : ChassisSpeeds {
         // Units are in meters and radians
-        var x: Double = limelightResults.x
-        var z: Double = limelightResults.z
-        val yaw: Double = limelightResults.rotation.z
+        var x: Double = curPose.x
+        var z: Double = curPose.z
+        val yaw: Double = curPose.rotation.z
 
         // Calculate the offsets for the Apriltag
         x -= (cos(yaw) * goalZ) - (sin(yaw) * goalX)

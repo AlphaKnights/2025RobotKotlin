@@ -4,30 +4,12 @@ import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.wpilibj.Timer
-import frc.robot.interfaces.PoseProvider
 import frc.robot.subsystems.AutoAlignCalc
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.*
-import org.mockito.kotlin.whenever
 import kotlin.math.PI
 
 internal class AutoAlignTest {
-    private val mockPoseProvider: PoseProvider = mock()
-    private val mockTimer: Timer = mock()
-
-    @Test
-    fun `getAlignSpeeds returns null when Limelight has no target`() {
-        whenever(mockPoseProvider.tagPose).thenReturn(null)
-        whenever(mockTimer.get()).thenReturn(2.0)
-
-        AutoAlignCalc.poseProvider = mockPoseProvider
-
-        val result = AutoAlignCalc.getAlignSpeeds(0.0, 0.0, mockTimer)
-        assertNull(result)
-    }
-
     @Test
     fun `getAlignSpeeds returns correct ChassisSpeeds when Limelight has target with various positions`() {
         // Various mock positions and expected results
@@ -85,14 +67,8 @@ internal class AutoAlignTest {
             val offsets = test[1] as DoubleArray
             val expectedChassisSpeeds = test[2] as ChassisSpeeds
 
-            whenever(mockPoseProvider.tagPose).thenReturn(pose)
-            whenever(mockTimer.get()).thenReturn(2.0)
-
-            AutoAlignCalc.poseProvider = mockPoseProvider
-
-            val result = AutoAlignCalc.getAlignSpeeds(offsets[0], offsets[1], mockTimer)
-            assertNotNull(result)
-            assertEquals(expectedChassisSpeeds.vxMetersPerSecond, result!!.vxMetersPerSecond)
+            val result = AutoAlignCalc.getAlignSpeeds(offsets[0], offsets[1], pose)
+            assertEquals(expectedChassisSpeeds.vxMetersPerSecond, result.vxMetersPerSecond)
             assertEquals(expectedChassisSpeeds.vyMetersPerSecond, result.vyMetersPerSecond)
         }
     }

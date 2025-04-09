@@ -7,6 +7,7 @@ import com.studica.frc.AHRS
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
+import edu.wpi.first.math.kinematics.SwerveModuleState
 
 object DriveSubsystem : SubsystemBase() 
 {
@@ -81,6 +82,33 @@ object DriveSubsystem : SubsystemBase()
         frontRight.setDesiredState(swerveModuleStates[1])
         rearLeft.setDesiredState(swerveModuleStates[2])
         rearRight.setDesiredState(swerveModuleStates[3])
+    }
+
+    fun setX() {
+        frontLeft.setDesiredState(
+            SwerveModuleState(
+                0.0,
+                Rotation2d.fromDegrees(45.0)
+            )
+        )
+        frontRight.setDesiredState(
+            SwerveModuleState(
+                0.0,
+                Rotation2d.fromDegrees(-45.0)
+            )
+        )
+        rearLeft.setDesiredState(
+            SwerveModuleState(
+                0.0,
+                Rotation2d.fromDegrees(-45.0)
+            )
+        )
+        rearRight.setDesiredState(
+            SwerveModuleState(
+                0.0,
+                Rotation2d.fromDegrees(45.0)
+            )
+        )
     }
 
     fun zeroHeading() {

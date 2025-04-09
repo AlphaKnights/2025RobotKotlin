@@ -110,8 +110,7 @@ object Constants
         const val LVL_4_HEIGHT = 50.0
     }
 
-    enum class ElevatorDirection
-    {
+    enum class ElevatorDirection {
         UP,
         DOWN,
     }
@@ -131,6 +130,17 @@ object Constants
 
         const val MAX_SPEED = 1.0
         const val MAX_ANGULAR_SPEED = 1.0
+
+        const val LEFT_X_OFFSET = 0.1625
+        const val LEFT_Z_OFFSET = 0.0
+
+        const val RIGHT_X_OFFSET = -0.1625
+        const val RIGHT_Z_OFFSET = 0.0
+    }
+
+    enum class AlignDirection {
+        LEFT,
+        RIGHT,
     }
 }
 
