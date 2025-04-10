@@ -2,8 +2,9 @@ package frc.robot.commands.elevator
 
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.ElevatorSubsystem
+import kotlin.math.abs
 
-class ElevatorPosCommand (
+class ElevatorPosAutoCommand (
     private val targetPosition: Double,
 ) : Command() {
     init {
@@ -14,7 +15,7 @@ class ElevatorPosCommand (
         ElevatorSubsystem.setPosition(targetPosition)
     }
 
-    override fun isFinished(): Boolean { 
-        return false
+    override fun isFinished(): Boolean {
+        return abs(ElevatorSubsystem.getPosition() - targetPosition) < 5
     }
 }
