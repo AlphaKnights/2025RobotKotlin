@@ -1,13 +1,20 @@
 package frc.robot.subsystems
 
+import com.pathplanner.lib.auto.AutoBuilder
+import com.pathplanner.lib.config.PIDConstants
+import com.pathplanner.lib.config.RobotConfig
+import com.pathplanner.lib.controllers.PPHolonomicDriveController
+import com.pathplanner.lib.util.DriveFeedforwards
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 
 import frc.robot.Constants
 import com.studica.frc.AHRS
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.wpilibj.DriverStation
 
 object DriveSubsystem : SubsystemBase() 
 {
@@ -38,6 +45,8 @@ object DriveSubsystem : SubsystemBase()
     private var gyro: AHRS = AHRS(AHRS.NavXComType.kMXP_SPI)
     private var odometry: SwerveDriveOdometry
 
+    private val config: RobotConfig = RobotConfig.fromGUISettings()
+
     init {
         gyro.enableBoardlevelYawReset(false)
         gyro.reset()
@@ -51,6 +60,25 @@ object DriveSubsystem : SubsystemBase()
                     rearLeft.getPosition(),
                     rearRight.getPosition(),
                 )
+        )
+
+        AutoBuilder.configure(
+            this::getPose,
+            this::resetPose,
+            this::getCurrentSpeeds,
+            { speeds: ChassisSpeeds, _: DriveFeedforwards ->
+                drive(speeds, fieldRelative = false)
+            },
+            PPHolonomicDriveController(
+                PIDConstants(5.0, 0.0, 0.0),
+                PIDConstants(5.0, 0.0, 0.0),
+                1.0,
+            ),
+            config,
+            this::shouldFlipPath,
+            this
+
+
         )
     }
 
@@ -66,6 +94,42 @@ object DriveSubsystem : SubsystemBase()
                 rearRight.getPosition(),
             )
         )
+    }
+
+    fun getPose(): Pose2d {
+        return odometry.poseMeters
+    }
+
+    fun resetPose(pose: Pose2d) {
+        resetOdometry(pose)
+    }
+
+    // IDE bug, the detected and actual signatures are different
+    @Suppress("TYPE_MISMATCH", "TOO_MANY_ARGUMENTS")
+    fun getCurrentSpeeds(): ChassisSpeeds {
+        return Constants.DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
+            frontLeft.getState(),
+            frontRight.getState(),
+            rearLeft.getState(),
+            rearRight.getState(),
+        )
+    }
+
+    fun resetOdometry(pose: Pose2d) {
+        odometry.resetPosition(
+            Rotation2d.fromDegrees(gyro.angle),
+            arrayOf(
+                frontLeft.getPosition(),
+                frontRight.getPosition(),
+                rearLeft.getPosition(),
+                rearRight.getPosition(),
+            ),
+            pose,
+        )
+    }
+
+    fun shouldFlipPath(): Boolean {
+        return (DriverStation.getAlliance() ?: DriverStation.Alliance.Red) == DriverStation.Alliance.Red
     }
 
     fun drive(

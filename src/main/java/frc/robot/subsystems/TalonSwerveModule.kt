@@ -111,6 +111,13 @@ class TalonSwerveModule(
         )
     }
 
+    fun getState(): SwerveModuleState {
+        return SwerveModuleState(
+            driveMotor.velocity.valueAsDouble,
+            Rotation2d.fromRotations(turnMotor.position.valueAsDouble) + offset
+        )
+    }
+
     fun setDesiredState(desiredState: SwerveModuleState) {
         val correctedState = SwerveModuleState(
             desiredState.speedMetersPerSecond,

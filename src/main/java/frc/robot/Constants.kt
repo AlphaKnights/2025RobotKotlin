@@ -20,6 +20,11 @@ object Constants
         const val DRIVER_CONTROLLER_PORT = 1
         const val DRIVE_DEADBAND = 0.4
 
+        const val RESET_HEADING_BUTTON = 11
+
+        const val ALIGN_LEFT_BUTTON = 5
+        const val ALIGN_RIGHT_BUTTON = 7
+
         const val BUTTON_BOARD_PORT = 2
         const val ELEVATOR_UP_BUTTON = 8
         const val ELEVATOR_DOWN_BUTTON = 10
@@ -28,6 +33,9 @@ object Constants
         const val ELEVATOR_LVL_2_BUTTON = 2
         const val ELEVATOR_LVL_3_BUTTON = 3
         const val ELEVATOR_LVL_4_BUTTON = 4
+
+        const val INTAKE_BUTTON = 6
+        const val DELIVERY_BUTTON = 9
     }
 
     object DriveConstants {
@@ -136,11 +144,25 @@ object Constants
 
         const val RIGHT_X_OFFSET = -0.1625
         const val RIGHT_Z_OFFSET = 0.0
+
+        const val ALIGN_TIMEOUT = 5 // seconds
+        const val ALIGN_SEEK_TIMEOUT = 1 // seconds
     }
 
     enum class AlignDirection {
         LEFT,
         RIGHT,
+    }
+
+    object UltrasonicConstants {
+        const val CORAL_DISTANCE = 3
+        const val PING_CHANNEL = 1
+        const val ECHO_CHANNEL = 2
+    }
+
+    object LaunchConstants {
+        const val MOTOR_ID = 42
+        const val LAUNCH_SPEED = 1.0
     }
 }
 

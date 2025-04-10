@@ -9,7 +9,6 @@ class DriveCommand(
     private val x: () -> Double,
     private val y: () -> Double,
     private val rot: () -> Double,
-    private val heading: () -> Boolean
 ) : Command() {
     init {
         addRequirements(DriveSubsystem)
@@ -17,12 +16,6 @@ class DriveCommand(
 
     override fun execute() {
         super.execute()
-
-        val heading: Boolean = heading()
-
-        if (heading) {
-            DriveSubsystem.zeroHeading()
-        }
 
         DriveSubsystem.drive(
             ChassisSpeeds(
