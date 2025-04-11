@@ -48,6 +48,13 @@ object LimelightSubsystem : PoseProvider {
         }
     }
 
+    fun isAligned(): Boolean {
+        return tagPose != null && tagPose!!.translation.x < Constants.AlignConstants.ALIGN_DEADZONE &&
+                tagPose!!.translation.y < Constants.AlignConstants.ALIGN_DEADZONE &&
+                tagPose!!.translation.z < Constants.AlignConstants.ALIGN_DEADZONE &&
+                tagPose!!.rotation.getAngle() < Constants.AlignConstants.ALIGN_ROT_DEADZONE
+    }
+
     fun parseJson(json: String?): LimelightResults? {
         val checkedJson: String = json ?: return null
         val mapper: ObjectMapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
