@@ -22,8 +22,7 @@ object HttpLimelightService : LimelightService {
                 val response = withContext(Dispatchers.IO) {
                     client.send(
                         HttpRequest.newBuilder()
-                        .uri(URL("${Constants.LimelightConstants.IP_ADDR}/results").toURI())
-                        .timeout(Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
+                        .uri(URL("http://${Constants.LimelightConstants.IP_ADDR}:5807/results").toURI())                        .timeout(Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
                         .GET()
                         .build(),
                     HttpResponse.BodyHandlers.ofString()
@@ -31,7 +30,7 @@ object HttpLimelightService : LimelightService {
                 }
                 result = response.body()
             } catch (e: Exception) {
-                print(e)
+                println(e)
                 result = null
             }
             return result
