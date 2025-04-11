@@ -1,19 +1,15 @@
 package frc.robot
 
-import com.pathplanner.lib.auto.NamedCommands
-import com.pathplanner.lib.commands.PathPlannerAuto
-import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import frc.robot.commands.DriveCommand
 import frc.robot.commands.ResetHeadingCommand
-import frc.robot.commands.autoalign.AutoAlignAutoCommand
 import frc.robot.commands.autoalign.AutoAlignManualCommand
 import frc.robot.commands.coralmanipulator.IntakeCommand
 import frc.robot.commands.coralmanipulator.LaunchCommand
 import frc.robot.commands.elevator.ElevatorManualCommand
-import frc.robot.commands.elevator.ElevatorPosAutoCommand
 import frc.robot.commands.elevator.ElevatorPosCommand
 import frc.robot.subsystems.DriveSubsystem
+import frc.robot.subsystems.LimelightSubsystem
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,22 +29,7 @@ object RobotContainer
 
     init
     {
-        NamedCommands.registerCommands(
-            mapOf(
-                "Left" to AutoAlignAutoCommand(Constants.AlignDirection.LEFT),
-                "Right" to AutoAlignAutoCommand(Constants.AlignDirection.RIGHT),
-
-                "Lvl 1" to ElevatorPosAutoCommand(Constants.ElevatorConstants.LVL_1_HEIGHT),
-                "Lvl 2" to ElevatorPosAutoCommand(Constants.ElevatorConstants.LVL_2_HEIGHT),
-                "Lvl 3" to ElevatorPosAutoCommand(Constants.ElevatorConstants.LVL_3_HEIGHT),
-                "Lvl 4" to ElevatorPosAutoCommand(Constants.ElevatorConstants.LVL_4_HEIGHT),
-
-                "Intake" to IntakeCommand(),
-                "Delivery" to LaunchCommand(),
-            )
-        )
-
-        configureBindings()
+        LimelightSubsystem.startPolling()
     }
 
     private fun configureBindings() {
@@ -133,9 +114,5 @@ object RobotContainer
             .onTrue(
                 IntakeCommand()
             )
-    }
-
-    fun getAutonomousCommand(): Command {
-        return PathPlannerAuto("Auto")
     }
 }
