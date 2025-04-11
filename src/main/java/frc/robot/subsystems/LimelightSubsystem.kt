@@ -37,7 +37,7 @@ object LimelightSubsystem : PoseProvider {
         limelightService.fetchResults()?.let { json ->
             return parseJson(json)?.targets_Fiducials?.getOrNull(0)?.targetPose_RobotSpace
         } ?: run {
-            coroutineScope.cancel("Limelight returned null results")
+//            coroutineScope.cancel("Limelight returned null results")
             return null
         }
     }
