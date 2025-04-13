@@ -10,6 +10,7 @@ import frc.robot.interfaces.PoseProvider
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.math.abs
 
 object LimelightSubsystem : PoseProvider {
     private val mutex = Mutex()
@@ -50,10 +51,14 @@ object LimelightSubsystem : PoseProvider {
     }
 
     fun isAligned(): Boolean {
-        return tagPose != null && tagPose!!.translation.x < Constants.AlignConstants.ALIGN_DEADZONE &&
-                tagPose!!.translation.y < Constants.AlignConstants.ALIGN_DEADZONE &&
-                tagPose!!.translation.z < Constants.AlignConstants.ALIGN_DEADZONE &&
-                tagPose!!.rotation.getAngle() < Constants.AlignConstants.ALIGN_ROT_DEADZONE
+        return tagPose != null &&
+                ((abs(tagPose!!.translation.x + Constants.AlignConstants.LEFT_X_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE &&
+                abs(tagPose!!.translation.z + Constants.AlignConstants.LEFT_Z_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE
+                        ) || (
+                abs(tagPose!!.translation.x + Constants.AlignConstants.RIGHT_X_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE &&
+                abs(tagPose!!.translation.z + Constants.AlignConstants.RIGHT_Z_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE
+                                )) &&
+                abs(tagPose!!.rotation.z) <= Constants.AlignConstants.ALIGN_ROT_DEADZONE
     }
 
     fun parseJson(json: String?): LimelightResults? {

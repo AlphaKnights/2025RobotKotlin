@@ -1,6 +1,7 @@
 package frc.robot
 
 import edu.wpi.first.math.geometry.Pose3d
+import edu.wpi.first.math.geometry.Rotation3d
 import frc.robot.interfaces.LimelightService
 import frc.robot.subsystems.LimelightSubsystem
 import kotlinx.coroutines.*
@@ -9,10 +10,10 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.whenever
+import frc.robot.Constants.AlignConstants
 
 internal class LimelightTest {
     private val mockLimelightService: LimelightService = mock()
@@ -284,21 +285,50 @@ internal class LimelightTest {
         assertEquals(2.0, LimelightSubsystem.tagPose?.x) // Last writer wins
     }
 
+//    As of now, this test won't be used since we don't want to cancel the coroutine scope
+//    @Test
+//    fun `coroutineScope cancels when fetchResults returns null`() = runTest(testScheduler) {
+//        mock<LimelightService>().apply {
+//            whenever(fetchResults()).thenReturn(null)
+//        }
+//
+//        // Capture the exception
+//        val exception = assertThrows<CancellationException> {
+//            LimelightSubsystem.updateTagPosition()
+//            testScheduler.advanceUntilIdle()
+//        }
+//
+//        // Verify cancellation details
+//        assertEquals("Limelight returned null results", exception.message)
+//        assertFalse(LimelightSubsystem.coroutineScope.isActive)
+//        assertNull(LimelightSubsystem.tagPose)
+//    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `coroutineScope cancels when fetchResults returns null`() = runTest(testScheduler) {
-        mock<LimelightService>().apply {
-            whenever(fetchResults()).thenReturn(null)
-        }
+    fun `isAligned handles multiple positions correctly`() = runTest {
+        val testCases: Array<Array<Any>> = arrayOf(
+            // Position tests
+            arrayOf(Pose3d(AlignConstants.LEFT_X_OFFSET, AlignConstants.LEFT_Z_OFFSET, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)), true),
+            arrayOf(Pose3d(AlignConstants.RIGHT_X_OFFSET, AlignConstants.RIGHT_Z_OFFSET, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)), true),
+            arrayOf(Pose3d(AlignConstants.LEFT_X_OFFSET + AlignConstants.ALIGN_DEADZONE + 0.1, AlignConstants.LEFT_Z_OFFSET + AlignConstants.ALIGN_DEADZONE + 0.1, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)), false),
+            arrayOf(Pose3d(AlignConstants.RIGHT_X_OFFSET - AlignConstants.ALIGN_DEADZONE - 0.1, AlignConstants.RIGHT_Z_OFFSET - AlignConstants.ALIGN_DEADZONE - 0.1, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)), false),
+            arrayOf(Pose3d(AlignConstants.LEFT_X_OFFSET + AlignConstants.ALIGN_DEADZONE, AlignConstants.LEFT_Z_OFFSET + AlignConstants.ALIGN_DEADZONE * 0.9, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)), true),
+            arrayOf(Pose3d(AlignConstants.RIGHT_X_OFFSET - AlignConstants.ALIGN_DEADZONE, AlignConstants.RIGHT_Z_OFFSET - AlignConstants.ALIGN_DEADZONE * 0.9, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)), true),
 
-        // Capture the exception
-        val exception = assertThrows<CancellationException> {
-            LimelightSubsystem.updateTagPosition()
-            testScheduler.advanceUntilIdle()
-        }
+            // Yaw tests
+            arrayOf(Pose3d(AlignConstants.LEFT_X_OFFSET, AlignConstants.LEFT_Z_OFFSET, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE + 0.1)), false),
+            arrayOf(Pose3d(AlignConstants.LEFT_X_OFFSET, AlignConstants.LEFT_Z_OFFSET, 0.0, Rotation3d(0.0, 0.0, -AlignConstants.ALIGN_ROT_DEADZONE - 0.1)), false),
+            arrayOf(Pose3d(AlignConstants.LEFT_X_OFFSET, AlignConstants.LEFT_Z_OFFSET, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)), true),
 
-        // Verify cancellation details
-        assertEquals("Limelight returned null results", exception.message)
-        assertFalse(LimelightSubsystem.coroutineScope.isActive)
-        assertNull(LimelightSubsystem.tagPose)
+            )
+
+        for ((pose, expected) in testCases) {
+            // Set the tag pose
+            LimelightSubsystem.setTagPose(pose as Pose3d)
+
+            // Assert the result of isAligned
+            assertEquals(expected, LimelightSubsystem.isAligned(), "Failed for pose: $pose")
+        }
     }
 }
