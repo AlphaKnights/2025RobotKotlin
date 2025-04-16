@@ -24,7 +24,8 @@ object AutoAlignCalc {
         if (abs(x) > abs(z)) {
             z = abs(z) / abs(x)
             x = 1.0
-        } else {
+        }
+        if (abs(x) < abs(z)) {
             z = 1.0
             x = abs(x) / abs(z)
         }
