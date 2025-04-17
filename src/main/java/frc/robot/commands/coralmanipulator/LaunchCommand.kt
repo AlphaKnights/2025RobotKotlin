@@ -20,7 +20,7 @@ class LaunchCommand : Command() {
     }
 
     override fun execute() {
-        CoralManipulatorSubsystem.forward()
+        CoralManipulatorSubsystem.forward(0.2)
     }
 
     override fun isFinished(): Boolean {

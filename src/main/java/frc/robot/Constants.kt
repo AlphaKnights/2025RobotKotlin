@@ -158,12 +158,12 @@ object Constants
     object UltrasonicConstants {
         const val CORAL_DISTANCE = 3
         const val PING_CHANNEL = 1
-        const val ECHO_CHANNEL = 2
+        const val ECHO_CHANNEL = 0
     }
 
     object LaunchConstants {
-        const val MOTOR_ID = 42
-        const val LAUNCH_SPEED = 1.0
+        const val MOTOR_ID = 30
+        const val LAUNCH_SPEED = 0.3
     }
 }
 

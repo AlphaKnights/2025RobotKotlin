@@ -1,8 +1,10 @@
 package frc.robot.subsystems
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration
-import com.ctre.phoenix6.hardware.TalonFX
-import com.ctre.phoenix6.signals.NeutralModeValue
+import com.revrobotics.spark.SparkBase
+import com.revrobotics.spark.SparkLowLevel
+import com.revrobotics.spark.SparkMax
+import com.revrobotics.spark.config.SparkBaseConfig
+import com.revrobotics.spark.config.SparkMaxConfig
 import edu.wpi.first.wpilibj.Ultrasonic
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
@@ -12,24 +14,30 @@ object CoralManipulatorSubsystem : SubsystemBase() {
         Constants.UltrasonicConstants.PING_CHANNEL,
         Constants.UltrasonicConstants.ECHO_CHANNEL
     )
-    private val launchMotor = TalonFX(Constants.LaunchConstants.MOTOR_ID)
+    private val launchMotor = SparkMax(Constants.LaunchConstants.MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     init {
         Ultrasonic.setAutomaticMode(true)
         rangeFinder.isEnabled = true
 
-        val launchMotorConfig = TalonFXConfiguration().apply {
-            MotorOutput.apply {
-                NeutralMode = NeutralModeValue.Brake
-            }
+        val launchMotorConfig = SparkMaxConfig().apply{
+            idleMode(SparkBaseConfig.IdleMode.kBrake)
         }
 
-        launchMotor.configurator.apply(launchMotorConfig)
+        launchMotor.configure(
+            launchMotorConfig,
+            SparkBase.ResetMode.kResetSafeParameters,
+            SparkBase.PersistMode.kPersistParameters,
+        )
     }
 
-    fun forward() {
-        launchMotor.set(Constants.LaunchConstants.LAUNCH_SPEED)
+    fun forward(launch: Double = 0.0) {
+        launchMotor.set(Constants.LaunchConstants.LAUNCH_SPEED + launch)
     }
+
+
+
+
 
     fun stop() {
         launchMotor.stopMotor()
