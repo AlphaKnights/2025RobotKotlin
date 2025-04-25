@@ -134,17 +134,17 @@ object Constants
         const val ALIGN_DEADZONE = 0.03
         val ALIGN_ROT_DEADZONE = Units.degreesToRadians(5.0)
 
-        const val FINE_ALIGN_DEADZONE = 0.03
-        val FINE_ALIGN_ROT_DEADZONE = Units.degreesToRadians(20.0)
+        const val FINE_ALIGN_DEADZONE = 1.0
+        val FINE_ALIGN_ROT_DEADZONE = Units.degreesToRadians(5.0)
 
         const val MAX_SPEED = 1.0
         const val MAX_ANGULAR_SPEED = 1.0
 
-        const val LEFT_X_OFFSET = 0.1625
-        const val LEFT_Z_OFFSET = 0.0
+        const val LEFT_X_OFFSET = -0.1625
+        const val LEFT_Z_OFFSET = 0.457
 
-        const val RIGHT_X_OFFSET = -0.1625
-        const val RIGHT_Z_OFFSET = 0.0
+        const val RIGHT_X_OFFSET = 0.1625
+        const val RIGHT_Z_OFFSET = 0.457
 
         const val ALIGN_TIMEOUT = 5 // seconds
         const val ALIGN_SEEK_TIMEOUT = 1 // seconds

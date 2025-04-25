@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test
 internal class IsAlignedTest {
     @Test
     fun `isAligned returns true when april tag on different sides of robot`() = runTest {
-        LimelightSubsystem.setTagPose(Pose3d(AlignConstants.LEFT_X_OFFSET, AlignConstants.LEFT_Z_OFFSET, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)))
+        LimelightSubsystem.setTagPose(Pose3d(AlignConstants.LEFT_X_OFFSET, 0.0, AlignConstants.LEFT_Z_OFFSET, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)))
         assertEquals(true, LimelightSubsystem.isAligned())
 
-        LimelightSubsystem.setTagPose(Pose3d(AlignConstants.RIGHT_X_OFFSET, AlignConstants.RIGHT_Z_OFFSET, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)))
+        LimelightSubsystem.setTagPose(Pose3d(AlignConstants.RIGHT_X_OFFSET, 0.0, AlignConstants.RIGHT_Z_OFFSET, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)))
         assertEquals(true, LimelightSubsystem.isAligned())
     }
 
@@ -47,10 +47,10 @@ internal class IsAlignedTest {
 
     @Test
     fun `isAligned returns true when the rotation of the tag is within the range`() = runTest {
-        LimelightSubsystem.setTagPose(Pose3d(AlignConstants.LEFT_X_OFFSET, AlignConstants.LEFT_Z_OFFSET, 0.0, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)))
+        LimelightSubsystem.setTagPose(Pose3d(AlignConstants.LEFT_X_OFFSET, 0.0, AlignConstants.LEFT_Z_OFFSET, Rotation3d(0.0, 0.0, AlignConstants.ALIGN_ROT_DEADZONE)))
         assertEquals(true, LimelightSubsystem.isAligned())
 
-        LimelightSubsystem.setTagPose(Pose3d(AlignConstants.RIGHT_X_OFFSET, AlignConstants.RIGHT_Z_OFFSET, 0.0, Rotation3d(0.0, 0.0, -AlignConstants.ALIGN_ROT_DEADZONE)))
+        LimelightSubsystem.setTagPose(Pose3d(AlignConstants.RIGHT_X_OFFSET, 0.0, AlignConstants.RIGHT_Z_OFFSET, Rotation3d(0.0, 0.0, -AlignConstants.ALIGN_ROT_DEADZONE)))
         assertEquals(true, LimelightSubsystem.isAligned())
     }
 

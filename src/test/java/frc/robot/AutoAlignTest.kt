@@ -98,7 +98,7 @@ internal class AutoAlignTest {
 fun `getAlignSpeeds returns left when tag is to the left`() {
     val pose = Pose3d(
         Translation3d(
-            0.5, 0.0, 0.0
+            5.0, 0.0, 0.0
         ),
         Rotation3d(
             0.0, 0.0, 0.0

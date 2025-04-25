@@ -26,7 +26,8 @@ class AutoAlignAutoCommand(
     }
 
     override fun execute() {
-        val curPose = LimelightSubsystem.tagPose ?: return
+        val curPose: Pose3d? = LimelightSubsystem.tagPose
+        curPose ?: return
 
         timer.reset()
 

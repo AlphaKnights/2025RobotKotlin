@@ -18,7 +18,10 @@ class AutoAlignManualCommand(
     override fun initialize() {}
 
     override fun execute() {
-        val curPose: Pose3d = LimelightSubsystem.tagPose ?: return
+        val curPose: Pose3d = LimelightSubsystem.tagPose ?: run {
+            DriveSubsystem.setX()
+            return
+        }
 
         val speeds = AutoAlignCalc.getAlignSpeeds(
             goalX = if (direction == Constants.AlignDirection.LEFT) Constants.AlignConstants.LEFT_X_OFFSET else Constants.AlignConstants.RIGHT_X_OFFSET,

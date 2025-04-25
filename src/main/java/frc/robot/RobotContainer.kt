@@ -138,6 +138,6 @@ object RobotContainer
     }
 
     fun getAutonomousCommand(): Command {
-        return PathPlannerAuto("Auto")
+        return PathPlannerAuto("autodelivery")
     }
 }

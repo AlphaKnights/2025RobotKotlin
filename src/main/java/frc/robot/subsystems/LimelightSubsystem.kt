@@ -53,10 +53,10 @@ object LimelightSubsystem : PoseProvider {
     fun isAligned(): Boolean {
         return tagPose != null &&
                 ((abs(tagPose!!.translation.x + Constants.AlignConstants.LEFT_X_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE &&
-                abs(tagPose!!.translation.z + Constants.AlignConstants.LEFT_Z_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE
+                abs(tagPose!!.translation.z - Constants.AlignConstants.LEFT_Z_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE
                         ) || (
                 abs(tagPose!!.translation.x + Constants.AlignConstants.RIGHT_X_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE &&
-                abs(tagPose!!.translation.z + Constants.AlignConstants.RIGHT_Z_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE
+                abs(tagPose!!.translation.z - Constants.AlignConstants.RIGHT_Z_OFFSET) <= Constants.AlignConstants.ALIGN_DEADZONE
                                 )) &&
                 abs(tagPose!!.rotation.z) <= Constants.AlignConstants.ALIGN_ROT_DEADZONE
     }

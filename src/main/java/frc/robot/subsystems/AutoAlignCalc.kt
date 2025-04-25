@@ -14,7 +14,7 @@ object AutoAlignCalc {
         // Units are in meters and radians
         var x: Double = -curPose.x // Inverted to match the robot's coordinate system
         var z: Double = curPose.z
-        val yaw: Double = curPose.rotation.z
+        val yaw: Double = curPose.rotation.y
 
         var x_normalized = 1.0
         var z_normalized = 1.0
