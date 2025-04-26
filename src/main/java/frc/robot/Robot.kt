@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import frc.robot.LimelightHelpers.LimelightResults
 import frc.robot.subsystems.LimelightSubsystem
 
 /**
@@ -59,10 +60,16 @@ object Robot : TimedRobot()
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run()
 
+
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime())
         SmartDashboard.putNumber("CAN Utilization", RobotController.getCANStatus().percentBusUtilization * 100)
         SmartDashboard.putBoolean("Tag Detected", LimelightSubsystem.tagPose != null)
         SmartDashboard.putBoolean("Aligned to Tag", LimelightSubsystem.isAligned())
+        SmartDashboard.putNumber("limelight x", LimelightSubsystem.tagPose?.x ?: -1.0)
+        SmartDashboard.putNumber("limelight z", LimelightSubsystem.tagPose?.z ?: -1.0)
+        SmartDashboard.putNumber("limelight yaw", LimelightSubsystem.tagPose?.rotation?.y ?: -1.0)
+
+
     }
 
     /** This method is called once each time the robot enters Disabled mode.  */

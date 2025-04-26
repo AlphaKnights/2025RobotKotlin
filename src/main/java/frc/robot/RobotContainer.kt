@@ -16,7 +16,6 @@ import frc.robot.commands.elevator.ElevatorPosCommand
 import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.LimelightSubsystem
 
-
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the [Robot]
@@ -35,6 +34,8 @@ object RobotContainer
 
     init
     {
+        LimelightSubsystem.startPolling()
+
         NamedCommands.registerCommands(
             mapOf(
                 "Left" to AutoAlignAutoCommand(Constants.AlignDirection.LEFT),
@@ -49,7 +50,7 @@ object RobotContainer
                 "Delivery" to LaunchCommand(),
             )
         )
-        LimelightSubsystem.startPolling()
+
         configureBindings()
     }
 
@@ -138,6 +139,6 @@ object RobotContainer
     }
 
     fun getAutonomousCommand(): Command {
-        return PathPlannerAuto("autodelivery")
+        return PathPlannerAuto("Auto")
     }
 }

@@ -113,8 +113,8 @@ object Constants
         const val MAX_ELEVATOR_SPEED = 3.0
 
         const val LVL_1_HEIGHT = 0.0
-        const val LVL_2_HEIGHT = 35.0
-        const val LVL_3_HEIGHT  = 60.0
+        const val LVL_2_HEIGHT = 47.0
+        const val LVL_3_HEIGHT  = 76.0
         const val LVL_4_HEIGHT = 50.0
     }
 
