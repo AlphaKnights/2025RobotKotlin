@@ -1,0 +1,97 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "First"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Right"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lvl 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Delivery"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lvl 1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Second"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Third"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Right"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lvl 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Delivery"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lvl 1"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

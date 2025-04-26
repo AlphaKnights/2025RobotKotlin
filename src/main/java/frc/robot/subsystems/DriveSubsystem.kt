@@ -71,7 +71,7 @@ object DriveSubsystem : SubsystemBase()
             },
             PPHolonomicDriveController(
                 PIDConstants(5.0, 0.0, 0.0),
-                PIDConstants(5.0, 0.0, 0.0),
+                PIDConstants(17.0, 0.0, 0.0),
                 1.0,
             ),
             config,

@@ -75,9 +75,7 @@ class AutoAlignAutoCommand(
             }
             return false
         }
-        return curPose.x < Constants.AlignConstants.ALIGN_DEADZONE &&
-                curPose.z < Constants.AlignConstants.ALIGN_DEADZONE &&
-                curPose.rotation.z < Constants.AlignConstants.ALIGN_ROT_DEADZONE
+        return LimelightSubsystem.isAligned()
 
     }
 
