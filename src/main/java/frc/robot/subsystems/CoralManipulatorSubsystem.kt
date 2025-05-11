@@ -40,10 +40,8 @@ object CoralManipulatorSubsystem : SubsystemBase() {
         )
     }
 
-    fun forward(launch: Double = 0.0) {
-        launchMotor.set(
-            Constants.LaunchConstants.LAUNCH_SPEED + launch,
-        )
+    fun forward(launchProp: Double) {
+        launchMotor.set(launchProp)
     }
 
     fun stop() {

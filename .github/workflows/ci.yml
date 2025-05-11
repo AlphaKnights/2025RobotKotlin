@@ -30,7 +30,7 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
-      - name: Run assembly
+      - name: Run compile and assembly
         run: ./gradlew assemble
 
       - name: Run full build

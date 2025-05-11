@@ -67,6 +67,7 @@ object Constants {
                 ),
             )
 
+        /** The directions of the wheels when locking into an X formation */
         val MODULE_X_ROTATIONS =
             mapOf(
                 "frontLeft" to
@@ -178,10 +179,13 @@ object Constants {
     }
 
     object LimelightConstants {
+        /** How often the limelight should poll for data in seconds */
         const val POLLING_RATE = 20L
+
+        /** How long the limelight should wait for a response in seconds */
         const val TIMEOUT = 500L // milliseconds
 
-        //        const val IP_ADDR = "10.66.95.11"
+        /** The IP address of the limelight */
         const val IP_ADDR = "172.29.0.1"
     }
 
@@ -218,16 +222,41 @@ object Constants {
     }
 
     object UltrasonicConstants {
+        /** The gap between the ultrasonic sensor and the coral inside the manipulator */
         const val CORAL_DISTANCE = 3
+
+        /** The trig pin of the ultrasonic sensor corresponding to the SIG DIO pin */
         const val PING_CHANNEL = 1
+
+        /** The echo pin of the ultrasonic sensor corresponding to the SIG DIO pin */
         const val ECHO_CHANNEL = 0
     }
 
     object LaunchConstants {
         const val MOTOR_ID = 30
-        const val LAUNCH_SPEED = 0.3
 
+        /** The power factor of the manipulator motor when in taking a coral */
+        const val INTAKE_SPEED = 0.3
+
+        /** The power factor of the manipulator motor when launching a coral */
+        const val LAUNCH_SPEED = 1.0
+
+        /** The amount of time the manipulator motor should wait until it stops running.
+         *
+         * This will stop the motor running if too much time has passed with the ultrasonic sensor detecting a
+         * coral inside.
+         *
+         * This is to ensure that the motor doesn't draw too much power.
+         * */
         const val LAUNCH_TIMEOUT = 3.0 // seconds
+
+        /** The amount of time the manipulator motor should wait until it stops running.
+         *
+         * This will stop the motor running if too much time has passed with the ultrasonic sensor not detecting a
+         * coral inside.
+         *
+         * This is to ensure that the motor doesn't draw too much power.
+         * */
         const val INTAKE_TIMEOUT = 10.0 // seconds
     }
 

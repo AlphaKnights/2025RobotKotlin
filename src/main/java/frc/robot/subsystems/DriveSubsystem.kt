@@ -71,6 +71,7 @@ object DriveSubsystem : SubsystemBase() {
                 ),
             )
 
+        // PathPlanner auto builder
         AutoBuilder.configure(
             this::getPose,
             this::resetPose,
@@ -79,11 +80,13 @@ object DriveSubsystem : SubsystemBase() {
                 drive(speeds, fieldRelative = false)
             },
             PPHolonomicDriveController(
+                // Translation PID
                 PIDConstants(
                     PathPlannerConstants.TRANSLATION_P,
                     PathPlannerConstants.TRANSLATION_I,
                     PathPlannerConstants.TRANSLATION_D,
                 ),
+                // Rotation PID
                 PIDConstants(
                     PathPlannerConstants.ROTATION_P,
                     PathPlannerConstants.ROTATION_I,
@@ -126,7 +129,7 @@ object DriveSubsystem : SubsystemBase() {
             rearRight.getState(),
         )
 
-    fun resetOdometry(pose: Pose2d) {
+    private fun resetOdometry(pose: Pose2d) {
         odometry.resetPosition(
             Rotation2d.fromDegrees(gyro.angle),
             arrayOf(
@@ -169,6 +172,11 @@ object DriveSubsystem : SubsystemBase() {
         rearRight.setDesiredState(swerveModuleStates[3])
     }
 
+    /**
+     * Sets the swerve modules to a specific angle for X formation.
+     *
+     * This is used to prevent the robot from moving.
+     */
     fun setX() {
         frontLeft.setDesiredState(
             SwerveModuleState(
@@ -196,6 +204,11 @@ object DriveSubsystem : SubsystemBase() {
         )
     }
 
+    /**
+     * Resets the gyro to 0 degrees.
+     *
+     * This is used to reset the heading of the robot.
+     */
     fun zeroHeading() {
         gyro.reset()
     }

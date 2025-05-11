@@ -118,11 +118,19 @@ object ElevatorSubsystem : SubsystemBase() {
         )
     }
 
+    /**
+     * Sets the speed of the elevator motors.
+     * @param speed The proportion speed to set the motors to, between -1.0 and 1.0.
+     */
     fun move(speed: Double) {
         leftMotor.set(speed)
         rightMotor.set(speed)
     }
 
+    /**
+     * Sets the elevator motors to a specific position.
+     * @param position The position to set the motors to, in rotations.
+     */
     fun setPosition(position: Double) {
         leftPIDController.setReference(
             position,
@@ -134,6 +142,10 @@ object ElevatorSubsystem : SubsystemBase() {
         )
     }
 
+    /**
+     * Gets the current position of the elevator.
+     * @return The current position of the elevator, in rotations.
+     */
     fun getPosition(): Double = (leftMotor.encoder.position)
 
     fun stop() {

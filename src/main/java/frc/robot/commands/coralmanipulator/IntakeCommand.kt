@@ -5,7 +5,7 @@ package frc.robot.commands.coralmanipulator
 
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.Constants
+import frc.robot.Constants.LaunchConstants
 import frc.robot.subsystems.CoralManipulatorSubsystem
 
 class IntakeCommand : Command() {
@@ -24,14 +24,14 @@ class IntakeCommand : Command() {
     }
 
     override fun execute() {
-        CoralManipulatorSubsystem.forward()
+        CoralManipulatorSubsystem.forward(LaunchConstants.INTAKE_SPEED)
     }
 
     override fun isFinished(): Boolean {
         // Run until the coral is inside the robot
         return (
             CoralManipulatorSubsystem.coralInside() ||
-                timer.get() > Constants.LaunchConstants.INTAKE_TIMEOUT // seconds
+                timer.get() > LaunchConstants.INTAKE_TIMEOUT // seconds
         )
     }
 
