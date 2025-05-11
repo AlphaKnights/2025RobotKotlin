@@ -14,12 +14,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 
 object LimelightSubsystem : PoseProvider {
     private val mutex = Mutex()
@@ -45,22 +45,21 @@ object LimelightSubsystem : PoseProvider {
     }
 
     suspend fun updateTagPosition(): Pose3d? {
-        // Atomic cancellation check (no race condition)
-        coroutineScope.ensureActive()
-
-        // Fetch results within the coroutine scope lifecycle
-        limelightService.fetchResults()?.let { json ->
-            return parseJson(
-                json,
-            )?.targets_Fiducials
-                ?.getOrNull(
-                    0,
-                )?.targetPose_RobotSpace
-        } ?: run {
-//            This is still under review
-//            coroutineScope.cancel("Limelight returned null results")
-            return null
-        }
+        kotlin
+            .runCatching {
+                limelightService
+                    .fetchResults()
+                    ?.let(::parseJson)
+                    ?.targets_Fiducials
+                    ?.firstOrNull()
+                    ?.targetPose_RobotSpace
+            }.onSuccess { pose ->
+                return pose
+            }.onFailure {
+                println("Failed to update tag position: $it")
+                return null
+            }
+        return null
     }
 
     suspend fun setTagPose(pose: Pose3d?) {
@@ -69,36 +68,48 @@ object LimelightSubsystem : PoseProvider {
         }
     }
 
-    fun isAligned(): Boolean =
-        tagPose != null &&
-            (
-                (
-                    abs(
-                        tagPose!!.translation.x +
-                            Constants.AlignConstants.LEFT_X_OFFSET,
-                    ) <=
-                        Constants.AlignConstants.ALIGN_DEADZONE &&
-                        abs(
-                            tagPose!!.translation.z -
-                                Constants.AlignConstants.LEFT_Z_OFFSET,
-                        ) <=
-                        Constants.AlignConstants.ALIGN_DEADZONE
-                ) ||
-                    (
-                        abs(
-                            tagPose!!.translation.x +
-                                Constants.AlignConstants.RIGHT_X_OFFSET,
-                        ) <=
-                            Constants.AlignConstants.ALIGN_DEADZONE &&
-                            abs(
-                                tagPose!!.translation.z -
-                                    Constants.AlignConstants.RIGHT_Z_OFFSET,
-                            ) <=
-                            Constants.AlignConstants.ALIGN_DEADZONE
-                    )
-            ) &&
-            abs(tagPose!!.rotation.z) <=
-            Constants.AlignConstants.ALIGN_ROT_DEADZONE
+    fun isAligned(): Boolean {
+        val pose = tagPose ?: return false
+
+        return (
+            isWithinLeftPosition(pose) ||
+                isWithinRightPosition(pose)
+        ) &&
+            isRotationAligned(pose)
+    }
+
+    private fun isWithinLeftPosition(pose: Pose3d): Boolean {
+        val translation = pose.translation
+        return abs(
+            translation.x +
+                Constants.AlignConstants.LEFT_X_OFFSET,
+        ) <=
+            Constants.AlignConstants.ALIGN_DEADZONE &&
+            abs(
+                translation.z -
+                    Constants.AlignConstants.LEFT_Z_OFFSET,
+            ) <=
+            Constants.AlignConstants.ALIGN_DEADZONE
+    }
+
+    private fun isWithinRightPosition(pose: Pose3d): Boolean {
+        val translation = pose.translation
+        return (
+            abs(
+                translation.x +
+                    Constants.AlignConstants.RIGHT_X_OFFSET,
+            ) <=
+                Constants.AlignConstants.ALIGN_DEADZONE &&
+                abs(
+                    translation.z -
+                        Constants.AlignConstants.RIGHT_Z_OFFSET,
+                ) <=
+                Constants.AlignConstants.ALIGN_DEADZONE
+        )
+    }
+
+    private fun isRotationAligned(pose: Pose3d): Boolean =
+        pose.rotation.z.absoluteValue <= Constants.AlignConstants.ALIGN_ROT_DEADZONE
 
     fun parseJson(json: String?): LimelightResults? {
         val checkedJson: String = json ?: return null
