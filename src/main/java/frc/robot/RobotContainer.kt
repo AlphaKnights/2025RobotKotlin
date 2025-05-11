@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot
 
 import com.pathplanner.lib.auto.NamedCommands
@@ -27,10 +30,12 @@ import frc.robot.subsystems.LimelightSubsystem
  * to the various subsystems in this container to pass into to commands. The commands can just
  * directly reference the (single instance of the) object.
  */
-object RobotContainer
-{
+object RobotContainer {
     private val joystickController = JoystickController()
-    private val buttonBoard = CommandJoystick(Constants.OperatorConstants.BUTTON_BOARD_PORT)
+    private val buttonBoard =
+        CommandJoystick(
+            Constants.OperatorConstants.BUTTON_BOARD_PORT,
+        )
 
     init
     {
@@ -38,17 +43,33 @@ object RobotContainer
 
         NamedCommands.registerCommands(
             mapOf(
-                "Left" to AutoAlignAutoCommand(Constants.AlignDirection.LEFT),
-                "Right" to AutoAlignAutoCommand(Constants.AlignDirection.RIGHT),
-
-                "Lvl 1" to ElevatorPosAutoCommand(Constants.ElevatorConstants.LVL_1_HEIGHT),
-                "Lvl 2" to ElevatorPosAutoCommand(Constants.ElevatorConstants.LVL_2_HEIGHT),
-                "Lvl 3" to ElevatorPosAutoCommand(Constants.ElevatorConstants.LVL_3_HEIGHT),
-                "Lvl 4" to ElevatorPosAutoCommand(Constants.ElevatorConstants.LVL_4_HEIGHT),
-
+                "Left" to
+                    AutoAlignAutoCommand(
+                        Constants.AlignDirection.LEFT,
+                    ),
+                "Right" to
+                    AutoAlignAutoCommand(
+                        Constants.AlignDirection.RIGHT,
+                    ),
+                "Lvl 1" to
+                    ElevatorPosAutoCommand(
+                        Constants.ElevatorConstants.LVL_1_HEIGHT,
+                    ),
+                "Lvl 2" to
+                    ElevatorPosAutoCommand(
+                        Constants.ElevatorConstants.LVL_2_HEIGHT,
+                    ),
+                "Lvl 3" to
+                    ElevatorPosAutoCommand(
+                        Constants.ElevatorConstants.LVL_3_HEIGHT,
+                    ),
+                "Lvl 4" to
+                    ElevatorPosAutoCommand(
+                        Constants.ElevatorConstants.LVL_4_HEIGHT,
+                    ),
                 "Intake" to IntakeCommand(),
                 "Delivery" to LaunchCommand(),
-            )
+            ),
         )
 
         configureBindings()
@@ -56,89 +77,115 @@ object RobotContainer
 
     private fun configureBindings() {
         // Drive control
-        DriveSubsystem.defaultCommand = DriveCommand(
-            x = { joystickController.x() },
-            y = { joystickController.y() },
-            rot = { joystickController.rot() },
-        )
+        DriveSubsystem.defaultCommand =
+            DriveCommand(
+                x = { joystickController.x() },
+                y = { joystickController.y() },
+                rot = { joystickController.rot() },
+            )
 
         // Reset heading
-        joystickController.heading()
+        joystickController
+            .heading()
             .whileTrue(
-                ResetHeadingCommand()
+                ResetHeadingCommand(),
             )
 
         // Auto Align
-        buttonBoard.button(Constants.OperatorConstants.ALIGN_LEFT_BUTTON)
-            .whileTrue(
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.ALIGN_LEFT_BUTTON,
+            ).whileTrue(
                 AutoAlignManualCommand(
                     Constants.AlignDirection.LEFT,
-                )
+                ),
             )
 
-        buttonBoard.button(Constants.OperatorConstants.ALIGN_RIGHT_BUTTON)
-            .whileTrue(
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.ALIGN_RIGHT_BUTTON,
+            ).whileTrue(
                 AutoAlignManualCommand(
                     Constants.AlignDirection.RIGHT,
-                )
+                ),
             )
 
+        configureElevatorBindings()
+        configureCoralManipulatorBindings()
+    }
+
+    private fun configureElevatorBindings() {
         // Manual elevator control
-        buttonBoard.button(Constants.OperatorConstants.ELEVATOR_UP_BUTTON)
-            .whileTrue(
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.ELEVATOR_UP_BUTTON,
+            ).whileTrue(
                 ElevatorManualCommand(
-                    Constants.ElevatorDirection.UP
-                )
+                    Constants.ElevatorDirection.UP,
+                ),
             )
 
-        buttonBoard.button(Constants.OperatorConstants.ELEVATOR_DOWN_BUTTON)
-            .whileTrue(
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.ELEVATOR_DOWN_BUTTON,
+            ).whileTrue(
                 ElevatorManualCommand(
-                    Constants.ElevatorDirection.DOWN
-                )
+                    Constants.ElevatorDirection.DOWN,
+                ),
             )
 
         // Elevator positioning
-        buttonBoard.button(Constants.OperatorConstants.ELEVATOR_LVL_1_BUTTON)
-            .onTrue(
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.ELEVATOR_LVL_1_BUTTON,
+            ).onTrue(
                 ElevatorPosCommand(
-                    Constants.ElevatorConstants.LVL_1_HEIGHT
-                )
+                    Constants.ElevatorConstants.LVL_1_HEIGHT,
+                ),
             )
 
-        buttonBoard.button(Constants.OperatorConstants.ELEVATOR_LVL_2_BUTTON)
-            .onTrue(
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.ELEVATOR_LVL_2_BUTTON,
+            ).onTrue(
                 ElevatorPosCommand(
-                    Constants.ElevatorConstants.LVL_2_HEIGHT
-                )
+                    Constants.ElevatorConstants.LVL_2_HEIGHT,
+                ),
             )
 
-        buttonBoard.button(Constants.OperatorConstants.ELEVATOR_LVL_3_BUTTON)
-            .onTrue(
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.ELEVATOR_LVL_3_BUTTON,
+            ).onTrue(
                 ElevatorPosCommand(
-                    Constants.ElevatorConstants.LVL_3_HEIGHT
-                )
+                    Constants.ElevatorConstants.LVL_3_HEIGHT,
+                ),
             )
 
-        buttonBoard.button(Constants.OperatorConstants.ELEVATOR_LVL_4_BUTTON)
-            .onTrue(
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.ELEVATOR_LVL_4_BUTTON,
+            ).onTrue(
                 ElevatorPosCommand(
-                    Constants.ElevatorConstants.LVL_4_HEIGHT
-                )
-            )
-
-        // Coral Manipulator
-        buttonBoard.button(Constants.OperatorConstants.DELIVERY_BUTTON)
-            .onTrue(
-                LaunchCommand()
-            )
-        buttonBoard.button(Constants.OperatorConstants.INTAKE_BUTTON)
-            .onTrue(
-                IntakeCommand()
+                    Constants.ElevatorConstants.LVL_4_HEIGHT,
+                ),
             )
     }
 
-    fun getAutonomousCommand(): Command {
-        return PathPlannerAuto("Expo")
+    private fun configureCoralManipulatorBindings() {
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.DELIVERY_BUTTON,
+            ).onTrue(
+                LaunchCommand(),
+            )
+        buttonBoard
+            .button(
+                Constants.OperatorConstants.INTAKE_BUTTON,
+            ).onTrue(
+                IntakeCommand(),
+            )
     }
+
+    fun getAutonomousCommand(): Command = PathPlannerAuto("Expo")
 }

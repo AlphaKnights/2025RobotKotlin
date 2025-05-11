@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.commands
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds
@@ -19,9 +22,12 @@ class DriveCommand(
 
         DriveSubsystem.drive(
             ChassisSpeeds(
-                x() * Constants.DriveConstants.MAX_METERS_PER_SECOND,
-                y() * Constants.DriveConstants.MAX_METERS_PER_SECOND,
-                rot() * Constants.DriveConstants.MAX_ANGULAR_SPEED
+                x() *
+                    Constants.DriveConstants.MAX_METERS_PER_SECOND,
+                y() *
+                    Constants.DriveConstants.MAX_METERS_PER_SECOND,
+                rot() *
+                    Constants.DriveConstants.MAX_ANGULAR_SPEED,
             ),
             fieldRelative = true,
         )
@@ -30,7 +36,9 @@ class DriveCommand(
     override fun end(interrupted: Boolean) {
         DriveSubsystem.drive(
             ChassisSpeeds(
-                0.0, 0.0, 0.0
+                0.0,
+                0.0,
+                0.0,
             ),
             fieldRelative = false,
         )

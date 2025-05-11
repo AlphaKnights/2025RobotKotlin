@@ -1,11 +1,11 @@
-
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id "java"
     id "org.jetbrains.kotlin.jvm" version "2.1.0"
     id "edu.wpi.first.GradleRIO" version "2025.3.2"
     id "idea"
+    id "org.jlleitschuh.gradle.ktlint" version "12.2.0"
+    id "com.diffplug.spotless" version "7.0.3"
+    id "io.gitlab.arturbosch.detekt" version "1.23.8"
 }
 
 def javaVersion = JavaVersion.VERSION_17
@@ -136,5 +136,19 @@ idea {
         // Exclude the following from indexing and search
         excludeDirs+=file(".run" )
         excludeDirs+=file(".vscode" )
+    }
+}
+
+spotless {
+    kotlin {
+        target "src/**/*.kt"
+        ktlint()  // Use ktlint for formatting
+        trimTrailingWhitespace()
+        endWithNewline()
+        licenseHeader(
+                "/*\n" +
+                        " * (C) 2025 Galvaknights\n" +
+                        " */\n"
+        )
     }
 }

@@ -1,43 +1,65 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.limelight
 
 import edu.wpi.first.math.geometry.Pose3d
 import frc.robot.interfaces.LimelightService
 import frc.robot.subsystems.LimelightSubsystem
-import kotlinx.coroutines.*
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.whenever
 
+@Suppress("LongMethod")
 internal class LimelightTest {
-    private val mockLimelightService: LimelightService = mock()
+    private val mockLimelightService: LimelightService =
+        mock()
     private lateinit var originalService: LimelightService
     private val testScheduler = TestCoroutineScheduler()
-    private val testDispatcher = StandardTestDispatcher(testScheduler)
+    private val testDispatcher =
+        StandardTestDispatcher(testScheduler)
 
     @BeforeEach
     fun setup() {
-        originalService = LimelightSubsystem.limelightService
-        LimelightSubsystem.limelightService = mockLimelightService // Mock first!
-        LimelightSubsystem.coroutineScope = CoroutineScope(testDispatcher + SupervisorJob())
+        originalService =
+            LimelightSubsystem.limelightService
+        LimelightSubsystem.limelightService =
+            mockLimelightService // Mock first!
+        LimelightSubsystem.coroutineScope =
+            CoroutineScope(testDispatcher + SupervisorJob())
         LimelightSubsystem.startPolling()
     }
 
     @AfterEach
     fun tearDown() {
-        LimelightSubsystem.limelightService = originalService
+        LimelightSubsystem.limelightService =
+            originalService
         LimelightSubsystem.coroutineScope.cancel()
         reset(mockLimelightService)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `updateTagPosition sets tagPose correctly when Limelight has no target`() = runTest {
-        val validEmptyJson = """
+    fun `updateTagPosition sets tagPose correctly when Limelight has no target`() =
+        runTest {
+            val validEmptyJson = """
             {
             "Classifier": [],
             "Detector": [],
@@ -50,17 +72,22 @@ internal class LimelightTest {
         }
         """
 
-        whenever(mockLimelightService.fetchResults()).thenReturn(validEmptyJson)
+            whenever(
+                mockLimelightService.fetchResults(),
+            ).thenReturn(validEmptyJson)
 
-        advanceUntilIdle()
-        val result = LimelightSubsystem.updateTagPosition()
+            advanceUntilIdle()
+            val result =
+                LimelightSubsystem
+                    .updateTagPosition()
 
-        assertNull(result)
-    }
+            assertNull(result)
+        }
 
     @Test
-    fun `updateTagPosition sets tagPose correctly when Limelight has target`() = runBlocking {
-        val validJson = """
+    fun `updateTagPosition sets tagPose correctly when Limelight has target`() =
+        runBlocking {
+            val validJson = """
             {
             "Classifier": [],
             "Detector": [],
@@ -124,58 +151,80 @@ internal class LimelightTest {
             "v": 1
         }
         """
-        whenever(mockLimelightService.fetchResults()).thenReturn(validJson)
-        LimelightSubsystem.limelightService = mockLimelightService
+            whenever(
+                mockLimelightService.fetchResults(),
+            ).thenReturn(validJson)
+            LimelightSubsystem.limelightService =
+                mockLimelightService
 
-        val tagPose = LimelightSubsystem.updateTagPosition()
-        assert(tagPose != null)
-        assertEquals(-0.09991902572799474, tagPose!!.x)
-    }
+            val tagPose =
+                LimelightSubsystem
+                    .updateTagPosition()
+            assert(tagPose != null)
+            assertEquals(-0.09991902572799474, tagPose!!.x)
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `mutex prevents race conditions in tagPose updates`() = runTest {
-        val testScope = CoroutineScope(UnconfinedTestDispatcher(testScheduler))
-        LimelightSubsystem.coroutineScope = testScope
+    fun `mutex prevents race conditions in tagPose updates`() =
+        runTest {
+            val testScope =
+                CoroutineScope(
+                    UnconfinedTestDispatcher(testScheduler),
+                )
+            LimelightSubsystem.coroutineScope = testScope
 
-        val numCoroutines = 100
-        val jobs = List(numCoroutines) { idx ->
-            testScope.launch {
-                repeat(1000) {
-                    LimelightSubsystem.setTagPose(Pose3d(idx.toDouble(), 0.0, 0.0, null))
+            val numCoroutines = 100
+            val jobs =
+                List(numCoroutines) { idx ->
+                    testScope.launch {
+                        repeat(1000) {
+                            LimelightSubsystem.setTagPose(
+                                Pose3d(
+                                    idx.toDouble(),
+                                    0.0,
+                                    0.0,
+                                    null,
+                                ),
+                            )
+                        }
+                    }
                 }
-            }
+
+            testScheduler.advanceUntilIdle() // Execute all coroutines instantly
+            jobs.forEach { it.join() }
+
+            // Verify final state is consistent
+            val finalPose = LimelightSubsystem.tagPose
+            assertNotNull(finalPose)
+            assertEquals(numCoroutines - 1.0, finalPose?.x) // Last write wins
         }
-
-        testScheduler.advanceUntilIdle() // Execute all coroutines instantly
-        jobs.forEach { it.join() }
-
-        // Verify final state is consistent
-        val finalPose = LimelightSubsystem.tagPose
-        assertNotNull(finalPose)
-        assertEquals(numCoroutines - 1.0, finalPose?.x) // Last write wins
-    }
-
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `mutex ensures atomicity under worst-case scheduling`() = runTest {
-        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
-        val testScope = CoroutineScope(testDispatcher)
-        LimelightSubsystem.coroutineScope = testScope
+    fun `mutex ensures atomicity under worst-case scheduling`() =
+        runTest {
+            val testDispatcher =
+                UnconfinedTestDispatcher(testScheduler)
+            val testScope = CoroutineScope(testDispatcher)
+            LimelightSubsystem.coroutineScope = testScope
 
-        // Launch two coroutines that will interleave execution
-        testScope.launch {
-            LimelightSubsystem.setTagPose(Pose3d(1.0, 0.0, 0.0, null))
+            // Launch two coroutines that will interleave execution
+            testScope.launch {
+                LimelightSubsystem.setTagPose(
+                    Pose3d(1.0, 0.0, 0.0, null),
+                )
+            }
+
+            testScope.launch {
+                LimelightSubsystem.setTagPose(
+                    Pose3d(2.0, 0.0, 0.0, null),
+                )
+            }
+
+            testScheduler.advanceUntilIdle() // Force interleaved execution
+            assertEquals(2.0, LimelightSubsystem.tagPose?.x) // Last writer wins
         }
-
-        testScope.launch {
-            LimelightSubsystem.setTagPose(Pose3d(2.0, 0.0, 0.0, null))
-        }
-
-        testScheduler.advanceUntilIdle() // Force interleaved execution
-        assertEquals(2.0, LimelightSubsystem.tagPose?.x) // Last writer wins
-    }
 
 //    As of now, this test won't be used since we don't want to cancel the coroutine scope
 //    @Test
@@ -195,5 +244,4 @@ internal class LimelightTest {
 //        assertFalse(LimelightSubsystem.coroutineScope.isActive)
 //        assertNull(LimelightSubsystem.tagPose)
 //    }
-
 }

@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.subsystems
 
 import com.pathplanner.lib.auto.AutoBuilder
@@ -5,9 +8,6 @@ import com.pathplanner.lib.config.PIDConstants
 import com.pathplanner.lib.config.RobotConfig
 import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.util.DriveFeedforwards
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-
-import frc.robot.Constants
 import com.studica.frc.AHRS
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
@@ -15,52 +15,61 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.Constants.DriveConstants
+import frc.robot.Constants.PathPlannerConstants
 
-object DriveSubsystem : SubsystemBase() 
-{
-    private var frontLeft: TalonSwerveModule = TalonSwerveModule(
-        Constants.DriveConstants.FRONT_LEFT_DRIVING_ID,
-        Constants.DriveConstants.FRONT_LEFT_TURNING_ID,
-        Constants.DriveConstants.FRONT_LEFT_CANCODER_ID,
-        Constants.DriveConstants.FRONT_LEFT_CHASSIS_ANGULAR_OFFSET
-    )
-    private var frontRight: TalonSwerveModule = TalonSwerveModule(
-        Constants.DriveConstants.FRONT_RIGHT_DRIVING_ID,
-        Constants.DriveConstants.FRONT_RIGHT_TURNING_ID,
-        Constants.DriveConstants.FRONT_RIGHT_CANCODER_ID,
-        Constants.DriveConstants.FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET
-    )
-    private var rearLeft: TalonSwerveModule = TalonSwerveModule(
-        Constants.DriveConstants.REAR_LEFT_DRIVING_ID,
-        Constants.DriveConstants.REAR_LEFT_TURNING_ID,
-        Constants.DriveConstants.REAR_LEFT_CANCODER_ID,
-        Constants.DriveConstants.BACK_LEFT_CHASSIS_ANGULAR_OFFSET
-    )
-    private var rearRight: TalonSwerveModule = TalonSwerveModule(
-        Constants.DriveConstants.REAR_RIGHT_DRIVING_ID,
-        Constants.DriveConstants.REAR_RIGHT_TURNING_ID,
-        Constants.DriveConstants.REAR_RIGHT_CANCODER_ID,
-        Constants.DriveConstants.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET
-    )
+object DriveSubsystem : SubsystemBase() {
+    private var frontLeft: TalonSwerveModule =
+        TalonSwerveModule(
+            DriveConstants.FRONT_LEFT_DRIVING_ID,
+            DriveConstants.FRONT_LEFT_TURNING_ID,
+            DriveConstants.FRONT_LEFT_CANCODER_ID,
+            DriveConstants.FRONT_LEFT_CHASSIS_ANGULAR_OFFSET,
+        )
+    private var frontRight: TalonSwerveModule =
+        TalonSwerveModule(
+            DriveConstants.FRONT_RIGHT_DRIVING_ID,
+            DriveConstants.FRONT_RIGHT_TURNING_ID,
+            DriveConstants.FRONT_RIGHT_CANCODER_ID,
+            DriveConstants.FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET,
+        )
+    private var rearLeft: TalonSwerveModule =
+        TalonSwerveModule(
+            DriveConstants.REAR_LEFT_DRIVING_ID,
+            DriveConstants.REAR_LEFT_TURNING_ID,
+            DriveConstants.REAR_LEFT_CANCODER_ID,
+            DriveConstants.BACK_LEFT_CHASSIS_ANGULAR_OFFSET,
+        )
+    private var rearRight: TalonSwerveModule =
+        TalonSwerveModule(
+            DriveConstants.REAR_RIGHT_DRIVING_ID,
+            DriveConstants.REAR_RIGHT_TURNING_ID,
+            DriveConstants.REAR_RIGHT_CANCODER_ID,
+            DriveConstants.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET,
+        )
     private var gyro: AHRS = AHRS(AHRS.NavXComType.kMXP_SPI)
     private var odometry: SwerveDriveOdometry
 
-    private val config: RobotConfig = RobotConfig.fromGUISettings()
+    private val config: RobotConfig =
+        RobotConfig
+            .fromGUISettings()
 
     init {
         gyro.enableBoardlevelYawReset(false)
         gyro.reset()
 
-        odometry = SwerveDriveOdometry(
-            Constants.DriveConstants.DRIVE_KINEMATICS,
-            Rotation2d.fromDegrees(gyro.angle),
-            arrayOf(
+        odometry =
+            SwerveDriveOdometry(
+                DriveConstants.DRIVE_KINEMATICS,
+                Rotation2d.fromDegrees(gyro.angle),
+                arrayOf(
                     frontLeft.getPosition(),
                     frontRight.getPosition(),
                     rearLeft.getPosition(),
                     rearRight.getPosition(),
-                )
-        )
+                ),
+            )
 
         AutoBuilder.configure(
             this::getPose,
@@ -70,20 +79,25 @@ object DriveSubsystem : SubsystemBase()
                 drive(speeds, fieldRelative = false)
             },
             PPHolonomicDriveController(
-                PIDConstants(5.0, 0.0, 0.0),
-                PIDConstants(17.0, 0.0, 0.0),
+                PIDConstants(
+                    PathPlannerConstants.TRANSLATION_P,
+                    PathPlannerConstants.TRANSLATION_I,
+                    PathPlannerConstants.TRANSLATION_D,
+                ),
+                PIDConstants(
+                    PathPlannerConstants.ROTATION_P,
+                    PathPlannerConstants.ROTATION_I,
+                    PathPlannerConstants.ROTATION_D,
+                ),
                 1.0,
             ),
             config,
             this::shouldFlipPath,
-            this
-
-
+            this,
         )
     }
 
-    override fun periodic()
-    {
+    override fun periodic() {
         // This method will be called once per scheduler run
         odometry.update(
             Rotation2d.fromDegrees(gyro.angle),
@@ -92,13 +106,11 @@ object DriveSubsystem : SubsystemBase()
                 frontRight.getPosition(),
                 rearLeft.getPosition(),
                 rearRight.getPosition(),
-            )
+            ),
         )
     }
 
-    fun getPose(): Pose2d {
-        return odometry.poseMeters
-    }
+    fun getPose(): Pose2d = odometry.poseMeters
 
     fun resetPose(pose: Pose2d) {
         resetOdometry(pose)
@@ -106,14 +118,13 @@ object DriveSubsystem : SubsystemBase()
 
     // IDE bug, the detected and actual signatures are different
     @Suppress("TYPE_MISMATCH", "TOO_MANY_ARGUMENTS")
-    fun getCurrentSpeeds(): ChassisSpeeds {
-        return Constants.DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
+    fun getCurrentSpeeds(): ChassisSpeeds =
+        DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(
             frontLeft.getState(),
             frontRight.getState(),
             rearLeft.getState(),
             rearRight.getState(),
         )
-    }
 
     fun resetOdometry(pose: Pose2d) {
         odometry.resetPosition(
@@ -128,19 +139,29 @@ object DriveSubsystem : SubsystemBase()
         )
     }
 
-    fun shouldFlipPath(): Boolean {
-        return (DriverStation.getAlliance() ?: DriverStation.Alliance.Red) == DriverStation.Alliance.Red
-    }
+    fun shouldFlipPath(): Boolean =
+        (DriverStation.getAlliance() ?: DriverStation.Alliance.Red) == DriverStation.Alliance.Red
 
+    @Suppress("MagicNumber")
     fun drive(
-         speeds: ChassisSpeeds,
-         fieldRelative: Boolean,
+        speeds: ChassisSpeeds,
+        fieldRelative: Boolean,
     ) {
+        var swerveModuleStates =
+            DriveConstants.DRIVE_KINEMATICS
+                .toSwerveModuleStates(
+                    speeds,
+                )
 
-        var swerveModuleStates = Constants.DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds)
-
-        if (fieldRelative)
-            swerveModuleStates = Constants.DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, Rotation2d.fromDegrees(gyro.angle)))
+        if (fieldRelative) {
+            swerveModuleStates =
+                DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        speeds,
+                        Rotation2d.fromDegrees(gyro.angle),
+                    ),
+                )
+        }
 
         frontLeft.setDesiredState(swerveModuleStates[0])
         frontRight.setDesiredState(swerveModuleStates[1])
@@ -152,26 +173,26 @@ object DriveSubsystem : SubsystemBase()
         frontLeft.setDesiredState(
             SwerveModuleState(
                 0.0,
-                Rotation2d.fromDegrees(45.0)
-            )
+                DriveConstants.MODULE_X_ROTATIONS["frontLeft"],
+            ),
         )
         frontRight.setDesiredState(
             SwerveModuleState(
                 0.0,
-                Rotation2d.fromDegrees(-45.0)
-            )
+                DriveConstants.MODULE_X_ROTATIONS["frontRight"],
+            ),
         )
         rearLeft.setDesiredState(
             SwerveModuleState(
                 0.0,
-                Rotation2d.fromDegrees(-45.0)
-            )
+                DriveConstants.MODULE_X_ROTATIONS["rearLeft"],
+            ),
         )
         rearRight.setDesiredState(
             SwerveModuleState(
                 0.0,
-                Rotation2d.fromDegrees(45.0)
-            )
+                DriveConstants.MODULE_X_ROTATIONS["rearRight"],
+            ),
         )
     }
 

@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.subsystems
 
 import com.revrobotics.spark.SparkBase
@@ -10,19 +13,25 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
 
 object CoralManipulatorSubsystem : SubsystemBase() {
-    private val rangeFinder = Ultrasonic(
-        Constants.UltrasonicConstants.PING_CHANNEL,
-        Constants.UltrasonicConstants.ECHO_CHANNEL
-    )
-    private val launchMotor = SparkMax(Constants.LaunchConstants.MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
+    private val rangeFinder =
+        Ultrasonic(
+            Constants.UltrasonicConstants.PING_CHANNEL,
+            Constants.UltrasonicConstants.ECHO_CHANNEL,
+        )
+    private val launchMotor =
+        SparkMax(
+            Constants.LaunchConstants.MOTOR_ID,
+            SparkLowLevel.MotorType.kBrushless,
+        )
 
     init {
         Ultrasonic.setAutomaticMode(true)
         rangeFinder.isEnabled = true
 
-        val launchMotorConfig = SparkMaxConfig().apply{
-            idleMode(SparkBaseConfig.IdleMode.kBrake)
-        }
+        val launchMotorConfig =
+            SparkMaxConfig().apply {
+                idleMode(SparkBaseConfig.IdleMode.kBrake)
+            }
 
         launchMotor.configure(
             launchMotorConfig,
@@ -32,18 +41,16 @@ object CoralManipulatorSubsystem : SubsystemBase() {
     }
 
     fun forward(launch: Double = 0.0) {
-        launchMotor.set(Constants.LaunchConstants.LAUNCH_SPEED + launch)
+        launchMotor.set(
+            Constants.LaunchConstants.LAUNCH_SPEED + launch,
+        )
     }
-
-
-
-
 
     fun stop() {
         launchMotor.stopMotor()
     }
 
-    fun coralInside(): Boolean {
-        return rangeFinder.rangeInches < Constants.UltrasonicConstants.CORAL_DISTANCE
-    }
+    fun coralInside(): Boolean =
+        rangeFinder.rangeInches <
+            Constants.UltrasonicConstants.CORAL_DISTANCE
 }

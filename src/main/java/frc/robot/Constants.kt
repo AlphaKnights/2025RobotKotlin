@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot
 
 /*
@@ -13,10 +16,9 @@ import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.util.Units
 
-object Constants
-{
-    object OperatorConstants
-    {
+@Suppress("MagicNumber", "SpreadOperator")
+object Constants {
+    object OperatorConstants {
         const val DRIVER_CONTROLLER_PORT = 1
         const val DRIVE_DEADBAND = 0.4
 
@@ -45,19 +47,69 @@ object Constants
         private val TRACK_WIDTH = Units.inchesToMeters(26.5)
         private val WHEEL_BASE = Units.inchesToMeters(26.5)
 
-        private val MODULE_POSITIONS = arrayOf(
-            Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-            Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
-            Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-            Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0)
-        )
+        private val MODULE_POSITIONS =
+            arrayOf(
+                Translation2d(
+                    WHEEL_BASE / 2.0,
+                    TRACK_WIDTH / 2.0,
+                ),
+                Translation2d(
+                    WHEEL_BASE / 2.0,
+                    -TRACK_WIDTH / 2.0,
+                ),
+                Translation2d(
+                    -WHEEL_BASE / 2.0,
+                    TRACK_WIDTH / 2.0,
+                ),
+                Translation2d(
+                    -WHEEL_BASE / 2.0,
+                    -TRACK_WIDTH / 2.0,
+                ),
+            )
 
-        val DRIVE_KINEMATICS = SwerveDriveKinematics(*MODULE_POSITIONS)
+        val MODULE_X_ROTATIONS =
+            mapOf(
+                "frontLeft" to
+                    Rotation2d.fromDegrees(
+                        45.0,
+                    ),
+                "frontRight" to
+                    Rotation2d.fromDegrees(
+                        -45.0,
+                    ),
+                "rearLeft" to
+                    Rotation2d.fromDegrees(
+                        -45.0,
+                    ),
+                "rearRight" to
+                    Rotation2d.fromDegrees(
+                        45.0,
+                    ),
+            )
 
-        val FRONT_LEFT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(-0.764892578125)
-        val FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.75)
-        val BACK_LEFT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.079833984375)
-        val BACK_RIGHT_CHASSIS_ANGULAR_OFFSET: Rotation2d = Rotation2d.fromRotations(0.367919921875)
+        val DRIVE_KINEMATICS =
+            SwerveDriveKinematics(*MODULE_POSITIONS)
+
+        val FRONT_LEFT_CHASSIS_ANGULAR_OFFSET: Rotation2d =
+            Rotation2d
+                .fromRotations(
+                    -0.764892578125,
+                )
+        val FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET: Rotation2d =
+            Rotation2d
+                .fromRotations(
+                    0.75,
+                )
+        val BACK_LEFT_CHASSIS_ANGULAR_OFFSET: Rotation2d =
+            Rotation2d
+                .fromRotations(
+                    0.079833984375,
+                )
+        val BACK_RIGHT_CHASSIS_ANGULAR_OFFSET: Rotation2d =
+            Rotation2d
+                .fromRotations(
+                    0.367919921875,
+                )
 
         const val FRONT_LEFT_DRIVING_ID = 5
         const val REAR_LEFT_DRIVING_ID = 7
@@ -73,7 +125,6 @@ object Constants
         const val REAR_LEFT_CANCODER_ID = 4
         const val FRONT_RIGHT_CANCODER_ID = 2
         const val REAR_RIGHT_CANCODER_ID = 1
-
     }
 
     object ModuleConstants {
@@ -111,10 +162,13 @@ object Constants
         const val CURRENT_LIMIT = 40
 
         const val MAX_ELEVATOR_SPEED = 3.0
+        const val MANUAL_SPEED_FACTOR = 0.1
+
+        const val POS_DEADZONE = 5.0
 
         const val LVL_1_HEIGHT = 0.0
         const val LVL_2_HEIGHT = 47.0
-        const val LVL_3_HEIGHT  = 76.0
+        const val LVL_3_HEIGHT = 76.0
         const val LVL_4_HEIGHT = 50.0
     }
 
@@ -126,6 +180,7 @@ object Constants
     object LimelightConstants {
         const val POLLING_RATE = 20L
         const val TIMEOUT = 500L // milliseconds
+
         //        const val IP_ADDR = "10.66.95.11"
         const val IP_ADDR = "172.29.0.1"
     }
@@ -135,10 +190,15 @@ object Constants
         val ALIGN_ROT_DEADZONE = Units.degreesToRadians(5.0)
 
         const val FINE_ALIGN_DEADZONE = 1.0
-        val FINE_ALIGN_ROT_DEADZONE = Units.degreesToRadians(5.0)
+        val FINE_ALIGN_ROT_DEADZONE =
+            Units
+                .degreesToRadians(
+                    5.0,
+                )
 
         const val MAX_SPEED = 1.0
         const val MAX_ANGULAR_SPEED = 1.0
+        const val MIN_ANGULAR_SPEED = 0.2
 
         const val LEFT_X_OFFSET = -0.1625
         const val LEFT_Z_OFFSET = 0.457
@@ -148,6 +208,8 @@ object Constants
 
         const val ALIGN_TIMEOUT = 5 // seconds
         const val ALIGN_SEEK_TIMEOUT = 1 // seconds
+
+        const val ALIGN_TAG_SEEK_SPEED = 5.0
     }
 
     enum class AlignDirection {
@@ -164,8 +226,18 @@ object Constants
     object LaunchConstants {
         const val MOTOR_ID = 30
         const val LAUNCH_SPEED = 0.3
+
+        const val LAUNCH_TIMEOUT = 3.0 // seconds
+        const val INTAKE_TIMEOUT = 10.0 // seconds
+    }
+
+    object PathPlannerConstants {
+        const val TRANSLATION_P = 5.0
+        const val TRANSLATION_I = 0.0
+        const val TRANSLATION_D = 0.0
+
+        const val ROTATION_P = 17.0
+        const val ROTATION_I = 0.0
+        const val ROTATION_D = 0.0
     }
 }
-
-
-

@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.subsystems
 
 import com.revrobotics.spark.SparkBase
@@ -9,72 +12,98 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants.ElevatorConstants
 
 object ElevatorSubsystem : SubsystemBase() {
-    private val leftMotor = SparkMax(ElevatorConstants.LEFT_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless)
-    private val rightMotor = SparkMax(ElevatorConstants.RIGHT_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless)
+    private val leftMotor =
+        SparkMax(
+            ElevatorConstants.LEFT_MOTOR_CAN_ID,
+            SparkLowLevel.MotorType.kBrushless,
+        )
+    private val rightMotor =
+        SparkMax(
+            ElevatorConstants.RIGHT_MOTOR_CAN_ID,
+            SparkLowLevel.MotorType.kBrushless,
+        )
 
     private val leftPIDController = leftMotor.closedLoopController
     private val rightPIDController = rightMotor.closedLoopController
 
     init {
-        val leftConfig = SparkMaxConfig().apply {
-            inverted(true)
-            idleMode(ElevatorConstants.IDLE_MODE)
-            smartCurrentLimit(ElevatorConstants.CURRENT_LIMIT)
-
-            softLimit.apply {
-                forwardSoftLimitEnabled(true)
-                reverseSoftLimitEnabled(true)
-
-                forwardSoftLimit(ElevatorConstants.FORWARD_SOFT_LIMIT)
-                reverseSoftLimit(ElevatorConstants.REVERSE_SOFT_LIMIT)
-            }
-
-            encoder.apply {
-                positionConversionFactor(1.0)
-                velocityConversionFactor(1.0)
-            }
-
-            closedLoop.apply {
-                feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
-                pid(
-                    ElevatorConstants.P,
-                    ElevatorConstants.I,
-                    ElevatorConstants.D,
+        val leftConfig =
+            SparkMaxConfig().apply {
+                inverted(true)
+                idleMode(ElevatorConstants.IDLE_MODE)
+                smartCurrentLimit(
+                    ElevatorConstants.CURRENT_LIMIT,
                 )
-                outputRange(-1.0, 1.0)
-                positionWrappingEnabled(false)
+
+                softLimit.apply {
+                    forwardSoftLimitEnabled(true)
+                    reverseSoftLimitEnabled(true)
+
+                    forwardSoftLimit(
+                        ElevatorConstants.FORWARD_SOFT_LIMIT,
+                    )
+                    reverseSoftLimit(
+                        ElevatorConstants.REVERSE_SOFT_LIMIT,
+                    )
+                }
+
+                encoder.apply {
+                    positionConversionFactor(1.0)
+                    velocityConversionFactor(1.0)
+                }
+
+                closedLoop.apply {
+                    feedbackSensor(
+                        ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder,
+                    )
+                    pid(
+                        ElevatorConstants.P,
+                        ElevatorConstants.I,
+                        ElevatorConstants.D,
+                    )
+                    outputRange(-1.0, 1.0)
+                    positionWrappingEnabled(false)
+                }
             }
-        }
 
-        val rightConfig = SparkMaxConfig().apply {
-            inverted(false)
-            idleMode(ElevatorConstants.IDLE_MODE)
-            smartCurrentLimit(ElevatorConstants.CURRENT_LIMIT)
-
-            softLimit.apply {
-                forwardSoftLimitEnabled(true)
-                reverseSoftLimitEnabled(true)
-
-                forwardSoftLimit(ElevatorConstants.FORWARD_SOFT_LIMIT)
-                reverseSoftLimit(ElevatorConstants.REVERSE_SOFT_LIMIT)
-            }
-
-            encoder.apply {
-                positionConversionFactor(1.0)
-                velocityConversionFactor(1.0)
-            }
-
-            closedLoop.apply {
-                feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
-                pid(
-                    ElevatorConstants.P,
-                    ElevatorConstants.I,
-                    ElevatorConstants.D,
+        val rightConfig =
+            SparkMaxConfig().apply {
+                inverted(false)
+                idleMode(ElevatorConstants.IDLE_MODE)
+                smartCurrentLimit(
+                    ElevatorConstants.CURRENT_LIMIT,
                 )
-                outputRange(-1.0, 1.0)
-                positionWrappingEnabled(false)
+
+                softLimit.apply {
+                    forwardSoftLimitEnabled(true)
+                    reverseSoftLimitEnabled(true)
+
+                    forwardSoftLimit(
+                        ElevatorConstants.FORWARD_SOFT_LIMIT,
+                    )
+                    reverseSoftLimit(
+                        ElevatorConstants.REVERSE_SOFT_LIMIT,
+                    )
+                }
+
+                encoder.apply {
+                    positionConversionFactor(1.0)
+                    velocityConversionFactor(1.0)
+                }
+
+                closedLoop.apply {
+                    feedbackSensor(
+                        ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder,
+                    )
+                    pid(
+                        ElevatorConstants.P,
+                        ElevatorConstants.I,
+                        ElevatorConstants.D,
+                    )
+                    outputRange(-1.0, 1.0)
+                    positionWrappingEnabled(false)
+                }
             }
-        }
 
         leftMotor.configure(
             leftConfig,
@@ -95,13 +124,17 @@ object ElevatorSubsystem : SubsystemBase() {
     }
 
     fun setPosition(position: Double) {
-        leftPIDController.setReference(position, SparkBase.ControlType.kPosition)
-        rightPIDController.setReference(position, SparkBase.ControlType.kPosition)
+        leftPIDController.setReference(
+            position,
+            SparkBase.ControlType.kPosition,
+        )
+        rightPIDController.setReference(
+            position,
+            SparkBase.ControlType.kPosition,
+        )
     }
 
-    fun getPosition(): Double {
-        return(leftMotor.encoder.position)
-    }
+    fun getPosition(): Double = (leftMotor.encoder.position)
 
     fun stop() {
         leftMotor.stopMotor()

@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.commands.autoalign
 
 import edu.wpi.first.math.geometry.Pose3d
@@ -10,7 +13,7 @@ import frc.robot.subsystems.DriveSubsystem
 import frc.robot.subsystems.LimelightSubsystem
 
 class AutoAlignAutoCommand(
-    private val direction: Constants.AlignDirection
+    private val direction: Constants.AlignDirection,
 ) : Command() {
     private val timer = Timer()
     private var latestPose: Pose3d? = null
@@ -31,11 +34,26 @@ class AutoAlignAutoCommand(
 
         timer.reset()
 
-        val speeds = AutoAlignCalc.getAlignSpeeds(
-            goalX = if (direction == Constants.AlignDirection.LEFT) Constants.AlignConstants.LEFT_X_OFFSET else Constants.AlignConstants.RIGHT_X_OFFSET,
-            goalZ = if (direction == Constants.AlignDirection.LEFT) Constants.AlignConstants.LEFT_Z_OFFSET else Constants.AlignConstants.RIGHT_Z_OFFSET,
-            curPose = curPose,
-        )
+        val speeds =
+            AutoAlignCalc.getAlignSpeeds(
+                goalX =
+                    if (direction ==
+                        Constants.AlignDirection.LEFT
+                    ) {
+                        Constants.AlignConstants.LEFT_X_OFFSET
+                    } else {
+                        Constants.AlignConstants.RIGHT_X_OFFSET
+                    },
+                goalZ =
+                    if (direction ==
+                        Constants.AlignDirection.LEFT
+                    ) {
+                        Constants.AlignConstants.LEFT_Z_OFFSET
+                    } else {
+                        Constants.AlignConstants.RIGHT_Z_OFFSET
+                    },
+                curPose = curPose,
+            )
 
         if (
             speeds.vxMetersPerSecond == 0.0 &&
@@ -59,25 +77,27 @@ class AutoAlignAutoCommand(
 
         if (curPose == null) {
             val time = timer.get()
-            if (time > Constants.AlignConstants.ALIGN_TIMEOUT) {
+            if (time >
+                Constants.AlignConstants.ALIGN_TIMEOUT
+            ) {
                 return true
             }
 
-            if (time > Constants.AlignConstants.ALIGN_SEEK_TIMEOUT) {
+            if (time >
+                Constants.AlignConstants.ALIGN_SEEK_TIMEOUT
+            ) {
                 DriveSubsystem.drive(
-                    speeds = ChassisSpeeds(
-                        0.0,
-                        0.0,
-                        5.0,
-                    ),
+                    speeds =
+                        ChassisSpeeds(
+                            0.0,
+                            0.0,
+                            Constants.AlignConstants.ALIGN_TAG_SEEK_SPEED,
+                        ),
                     fieldRelative = false,
                 )
             }
             return false
         }
         return LimelightSubsystem.isAligned()
-
     }
-
-    override fun end(interrupted: Boolean) {}
 }

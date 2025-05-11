@@ -1,7 +1,11 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.commands.coralmanipulator
 
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
+import frc.robot.Constants
 import frc.robot.subsystems.CoralManipulatorSubsystem
 
 class LaunchCommand : Command() {
@@ -26,9 +30,9 @@ class LaunchCommand : Command() {
     override fun isFinished(): Boolean {
         // Run until the coral is out of the robot
         return (
-                !CoralManipulatorSubsystem.coralInside() ||
-                timer.get() > 3 // seconds
-                )
+            !CoralManipulatorSubsystem.coralInside() ||
+                timer.get() > Constants.LaunchConstants.LAUNCH_TIMEOUT // seconds
+        )
     }
 
     override fun end(interrupted: Boolean) {

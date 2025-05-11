@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.subsystems
 
 import frc.robot.Constants
@@ -11,28 +14,43 @@ import java.net.http.HttpResponse
 import java.time.Duration
 
 object HttpLimelightService : LimelightService {
-    private val client = HttpClient.newBuilder()
-        .version(HttpClient.Version.HTTP_1_1)
-        .connectTimeout(Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
-        .build()
+    private val client =
+        HttpClient
+            .newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
+            .connectTimeout(
+                Duration.ofMillis(
+                    Constants.LimelightConstants.TIMEOUT,
+                ),
+            ).build()
 
-        override suspend fun fetchResults(): String? {
-            var result: String?
-            try {
-                val response = withContext(Dispatchers.IO) {
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun fetchResults(): String? {
+        var result: String?
+        try {
+            val response =
+                withContext(Dispatchers.IO) {
                     client.send(
-                        HttpRequest.newBuilder()
-                        .uri(URL("http://${Constants.LimelightConstants.IP_ADDR}:5807/results").toURI())                        .timeout(Duration.ofMillis(Constants.LimelightConstants.TIMEOUT))
-                        .GET()
-                        .build(),
-                    HttpResponse.BodyHandlers.ofString()
+                        HttpRequest
+                            .newBuilder()
+                            .uri(
+                                URL(
+                                    "http://${Constants.LimelightConstants.IP_ADDR}:5807/results",
+                                ).toURI(),
+                            ).timeout(
+                                Duration.ofMillis(
+                                    Constants.LimelightConstants.TIMEOUT,
+                                ),
+                            ).GET()
+                            .build(),
+                        HttpResponse.BodyHandlers.ofString(),
                     )
                 }
-                result = response.body()
-            } catch (e: Exception) {
-                println(e)
-                result = null
-            }
-            return result
+            result = response.body()
+        } catch (e: Exception) {
+            println(e)
+            result = null
         }
+        return result
+    }
 }

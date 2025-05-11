@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.subsystems
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration
@@ -13,90 +16,100 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import frc.robot.Constants.ModuleConstants
 
-
 class TalonSwerveModule(
     driveMotorId: Int,
     turnMotorId: Int,
     encoderId: Int,
-    private val offset: Rotation2d
+    private val offset: Rotation2d,
 ) {
     private val driveMotor = TalonFX(driveMotorId)
     private val turnMotor = TalonFX(turnMotorId)
     private val encoder = CANcoder(encoderId)
-    private var desiredState = SwerveModuleState(
-        0.0,
-        Rotation2d.fromRotations(encoder.position.valueAsDouble) + offset
-    )
+    private var desiredState =
+        SwerveModuleState(
+            0.0,
+            Rotation2d.fromRotations(
+                encoder.position.valueAsDouble,
+            ) +
+                offset,
+        )
 
     init {
-        val driveMotorConfig = TalonFXConfiguration().apply {
-            CurrentLimits.apply {
-                SupplyCurrentLimitEnable = true
-                SupplyCurrentLimit = ModuleConstants.DRIVING_MOTOR_CURRENT_LIMIT
+        val driveMotorConfig =
+            TalonFXConfiguration().apply {
+                CurrentLimits.apply {
+                    SupplyCurrentLimitEnable = true
+                    SupplyCurrentLimit =
+                        ModuleConstants.DRIVING_MOTOR_CURRENT_LIMIT
+                }
+
+                Slot0.apply {
+                    kP = ModuleConstants.DRIVING_P
+                    kI = ModuleConstants.DRIVING_I
+                    kD = ModuleConstants.DRIVING_D
+                    kS = ModuleConstants.DRIVING_FF
+                    kV = ModuleConstants.DRIVING_V
+                    kA = ModuleConstants.DRIVING_A
+                }
+
+                OpenLoopRamps.apply {
+                    DutyCycleOpenLoopRampPeriod = 0.0
+                }
+
+                ClosedLoopRamps.apply {
+                    DutyCycleClosedLoopRampPeriod = 0.0
+                }
+
+                MotorOutput.apply {
+                    NeutralMode = NeutralModeValue.Brake
+                }
+
+                Feedback.apply {
+                    SensorToMechanismRatio =
+                        ModuleConstants.DRIVE_RATIO
+                }
             }
 
-            Slot0.apply {
-                kP = ModuleConstants.DRIVING_P
-                kI = ModuleConstants.DRIVING_I
-                kD = ModuleConstants.DRIVING_D
-                kS = ModuleConstants.DRIVING_FF
-                kV = ModuleConstants.DRIVING_V
-                kA = ModuleConstants.DRIVING_A
-            }
+        val turnMotorConfig =
+            TalonFXConfiguration().apply {
+                CurrentLimits.apply {
+                    SupplyCurrentLimitEnable = true
+                    SupplyCurrentLimit =
+                        ModuleConstants.TURNING_MOTOR_CURRENT_LIMIT
+                }
 
-            OpenLoopRamps.apply {
-                DutyCycleOpenLoopRampPeriod = 0.0
-            }
+                Feedback.apply {
+                    SensorToMechanismRatio = 1.0
+                    FeedbackRemoteSensorID = encoderId
+                    FeedbackSensorSource =
+                        FeedbackSensorSourceValue.RemoteCANcoder
+                }
 
-            ClosedLoopRamps.apply {
-                DutyCycleClosedLoopRampPeriod = 0.0
-            }
+                ClosedLoopGeneral.apply {
+                    ContinuousWrap = true
+                }
 
-            MotorOutput.apply {
-                NeutralMode = NeutralModeValue.Brake
-            }
+                Slot0.apply {
+                    kP = ModuleConstants.TURNING_P
+                    kI = ModuleConstants.TURNING_I
+                    kD = ModuleConstants.TURNING_D
+                    kS = ModuleConstants.TURNING_FF
+                }
 
-            Feedback.apply {
-                SensorToMechanismRatio = ModuleConstants.DRIVE_RATIO
-            }
-        }
+                OpenLoopRamps.apply {
+                    DutyCycleOpenLoopRampPeriod = 0.0
+                }
 
-        val turnMotorConfig = TalonFXConfiguration().apply {
-            CurrentLimits.apply {
-                SupplyCurrentLimitEnable = true
-                SupplyCurrentLimit = ModuleConstants.TURNING_MOTOR_CURRENT_LIMIT
-            }
+                ClosedLoopRamps.apply {
+                    DutyCycleClosedLoopRampPeriod = 0.0
+                }
 
-            Feedback.apply {
-                SensorToMechanismRatio = 1.0
-                FeedbackRemoteSensorID = encoderId
-                FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder
+                MotorOutput.apply {
+                    NeutralMode = NeutralModeValue.Brake
+                    Inverted =
+                        InvertedValue.Clockwise_Positive
+                }
             }
-
-            ClosedLoopGeneral.apply {
-                ContinuousWrap = true
-            }
-
-            Slot0.apply {
-                kP = ModuleConstants.TURNING_P
-                kI = ModuleConstants.TURNING_I
-                kD = ModuleConstants.TURNING_D
-                kS = ModuleConstants.TURNING_FF
-            }
-
-            OpenLoopRamps.apply {
-                DutyCycleOpenLoopRampPeriod = 0.0
-            }
-
-            ClosedLoopRamps.apply {
-                DutyCycleClosedLoopRampPeriod = 0.0
-            }
-
-            MotorOutput.apply {
-                NeutralMode = NeutralModeValue.Brake
-                Inverted = InvertedValue.Clockwise_Positive
-            }
-        }
 
         driveMotor.configurator.apply(driveMotorConfig)
         turnMotor.configurator.apply(turnMotorConfig)
@@ -104,31 +117,45 @@ class TalonSwerveModule(
         driveMotor.setPosition(0.0)
     }
 
-    fun getPosition(): SwerveModulePosition {
-        return SwerveModulePosition(
+    fun getPosition(): SwerveModulePosition =
+        SwerveModulePosition(
             driveMotor.position.valueAsDouble,
-            Rotation2d.fromRotations(turnMotor.position.valueAsDouble) + offset
+            Rotation2d.fromRotations(
+                turnMotor.position.valueAsDouble,
+            ) +
+                offset,
         )
-    }
 
-    fun getState(): SwerveModuleState {
-        return SwerveModuleState(
+    fun getState(): SwerveModuleState =
+        SwerveModuleState(
             driveMotor.velocity.valueAsDouble,
-            Rotation2d.fromRotations(turnMotor.position.valueAsDouble) + offset
+            Rotation2d.fromRotations(
+                turnMotor.position.valueAsDouble,
+            ) +
+                offset,
         )
-    }
 
     fun setDesiredState(desiredState: SwerveModuleState) {
-        val correctedState = SwerveModuleState(
-            desiredState.speedMetersPerSecond,
-            desiredState.angle - offset
+        val correctedState =
+            SwerveModuleState(
+                desiredState.speedMetersPerSecond,
+                desiredState.angle - offset,
+            )
+        correctedState.optimize(
+            Rotation2d.fromRotations(
+                encoder.position.valueAsDouble,
+            ),
         )
-        correctedState.optimize(Rotation2d.fromRotations(encoder.position.valueAsDouble))
 
-        driveMotor.setControl(VelocityVoltage(correctedState.speedMetersPerSecond))
-        turnMotor.setControl(PositionVoltage(correctedState.angle.rotations))
+        driveMotor.setControl(
+            VelocityVoltage(
+                correctedState.speedMetersPerSecond,
+            ),
+        )
+        turnMotor.setControl(
+            PositionVoltage(correctedState.angle.rotations),
+        )
 
         this.desiredState = desiredState
     }
-
 }

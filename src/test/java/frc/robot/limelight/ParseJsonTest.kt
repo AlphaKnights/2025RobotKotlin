@@ -1,3 +1,6 @@
+/*
+ * (C) 2025 Galvaknights
+ */
 package frc.robot.limelight
 
 import frc.robot.subsystems.LimelightSubsystem
@@ -19,6 +22,7 @@ class ParseJsonTest {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `parseJson returns a valid Pose3d when a valid pose is given`() {
         val validJson = """
             {
@@ -87,9 +91,28 @@ class ParseJsonTest {
 
         val result = LimelightSubsystem.parseJson(validJson)
         assert(result != null)
-        assertEquals( -0.09991902572799474, result!!.targets_Fiducials?.get(0)?.targetPose_RobotSpace?.x)
-        assertEquals(-0.1234042720218289, result.targets_Fiducials?.get(0)?.targetPose_RobotSpace?.y)
-        assertEquals(2.5218203039582496, result.targets_Fiducials?.get(0)?.targetPose_RobotSpace?.z)
+        assertEquals(
+            -0.09991902572799474,
+            result!!
+                .targets_Fiducials
+                ?.get(0)
+                ?.targetPose_RobotSpace
+                ?.x,
+        )
+        assertEquals(
+            -0.1234042720218289,
+            result.targets_Fiducials
+                ?.get(0)
+                ?.targetPose_RobotSpace
+                ?.y,
+        )
+        assertEquals(
+            2.5218203039582496,
+            result.targets_Fiducials
+                ?.get(0)
+                ?.targetPose_RobotSpace
+                ?.z,
+        )
     }
 
     @Test
