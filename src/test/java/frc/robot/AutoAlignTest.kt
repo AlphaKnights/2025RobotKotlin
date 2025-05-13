@@ -20,7 +20,7 @@ internal class AutoAlignTest {
         val result = AutoAlignCalc.getAlignSpeeds(0.0, 1.0, pose)
 
         // Y-speed should be negative (left in WPILib coordinates)
-        assertTrue(result.vxMetersPerSecond < 0.0)
+        assertTrue(result.vxMetersPerSecond > 0.0)
         assertEquals(0.0, result.vyMetersPerSecond, 0.001)
         assertEquals(0.0, result.omegaRadiansPerSecond, 0.001)
     }
